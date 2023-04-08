@@ -1,7 +1,9 @@
-import os
-import sys
+#! /bin/python3
+import sys,os
+__dir__ = os.path.dirname(__file__)
+
 import logging
-sys.path.append("./lib/")
+sys.path.append(__dir__ + "/lib")
 
 from PySide2.QtWidgets import *
 from PySide2.QtGui import *
@@ -19,13 +21,12 @@ from window import *
 class Main():
     def __init__(self):
         self.main_window = MainWindow()
-        self.plugins = plugin.plugins("plugins/")
+        self.plugins = plugin.plugins(__dir__ + "/plugins")
         self.plugins.load(self)
 
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    win = Main()
-    win.main_window.show()
-    app.exec_()
+app = QApplication(sys.argv)
+win = Main()
+win.main_window.show()
+app.exec_()
 

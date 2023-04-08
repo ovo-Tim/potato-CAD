@@ -1,5 +1,7 @@
 import os
 import sys
+from pathlib import Path
+__dir__ = str(Path(os.path.dirname(__file__)).parent.parent)
 
 os.environ['QT_API'] = 'pyside2'
 
@@ -14,7 +16,10 @@ from pyqtribbon.screenshotwindow import RibbonScreenShotWindow
 class main():
     def __init__(self, mainClass):
         ribbonbar = mainClass.main_window.RibbonBar
-        self.category1 = ribbonbar.addCategory("Category 1")
-        self.About_panel = self.category1.addPanel("About", showPanelOptionButton=False)
-        self.About_panel.addSmallButton("访问github", icon=QIcon("./icon.png"), slot = lambda: webbrowser.open_new_tab("https://github.com/ovo-Tim/potato-CAD"))
+        tr = mainClass.main_window.tr
+        self.category1 = ribbonbar.addCategory("Home")
+        self.file_panel = self.category1.addPanel(tr("文件"))
+        self.file_panel.addLargeButton(tr("打开文件"), icon = QIcon(__dir__ + '/icons/open_file.svg'))
+        self.About_panel = self.category1.addPanel(tr("关于"), showPanelOptionButton=False)
+        self.About_panel.addSmallButton(tr("访问主页"), icon=QIcon(__dir__ + "/icon.svg"), slot = lambda: webbrowser.open_new_tab("https://github.com/ovo-Tim/potato-CAD"))
         
