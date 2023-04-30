@@ -1,45 +1,17 @@
-from OCC.Display.backend import load_backend, get_loaded_backend
-from pyqtribbon.screenshotwindow import RibbonScreenShotWindow
 from pyqtribbon import *
 from pyqtribbon.titlewidget import RibbonTitleWidget
-import OCC.Display.qtDisplay as qtDisplay
-from OCC.Display.OCCViewer import rgb_color
-from OCC.Core.BRepPrimAPI import BRepPrimAPI_MakeBox
 from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
-from qframelesswindow import *
 import os
 import sys
 import time
+import logging
+from occ_page import occ_page
 
 from pathlib import Path
 __dir__ = str(Path(os.path.dirname(__file__)).parent)
 os.environ['QT_API'] = 'pyside2'
-
-
-load_backend("qt-pyside2")
-
-class occ_page(QWidget):
-    '''
-        一个包含OCC_canvas的页面。通常情况下，一个打开的3D文件(一个3D文件页面)就是一个occ_page
-    '''
-
-    def __init__(self):
-        super().__init__()
-        self.main_layout = QGridLayout(self)
-
-        # 基本属性
-        self.name = None
-
-        # 加载OCC
-        self.canvas = qtDisplay.qtViewer3d(self)
-        self.canvas.InitDriver()
-
-        self.main_layout.addWidget(self.canvas)
-        self.display = self.canvas._display
-
-        self.setLayout(self.main_layout)
 
 class my_RibbonBar(RibbonBar):
     def __init__(self, window, title):
@@ -79,10 +51,14 @@ class my_RibbonBar(RibbonBar):
 
 class MainWindow(QMainWindow):
     BORDER_WIDTH = 3
-    def __init__(self):
+    def __init__(self, setting: dict):
         super().__init__()
+        logging.debug("window id:" + str(self.winId()))
+        self.setting = setting
         self.title = "potato-CAD"
         self.initUI()
+
+        # print("In main window:"+str(int(self.winId())))
 
     def initUI(self):
         self.setWindowTitle(self.title)
@@ -101,6 +77,7 @@ class MainWindow(QMainWindow):
         self.page_list = {}
         self._activity_page = None
         self.main_page_window = QTabWidget()  # 主要的文件页面
+        self.main_page_window.currentChanged.connect(self.refresh_occ)
         self.main_layout.addWidget(self.main_page_window)
 
         self.new_page()
@@ -128,7 +105,7 @@ class MainWindow(QMainWindow):
         if pos.y() >= self.height()-self.BORDER_WIDTH:
             edges |= Qt.BottomEdge
         # change cursor
-        if et == QEvent.MouseMove and self.windowState() == Qt.WindowNoState:
+        if et == QEvent.MouseMove and self.windowState() == Qt.WindowNoState:  # noqa: F405
             if edges in (Qt.LeftEdge | Qt.TopEdge, Qt.RightEdge | Qt.BottomEdge):
                 self.setCursor(Qt.SizeFDiagCursor)
             elif edges in (Qt.RightEdge | Qt.TopEdge, Qt.LeftEdge | Qt.BottomEdge):
@@ -140,9 +117,16 @@ class MainWindow(QMainWindow):
             else:
                 self.setCursor(Qt.ArrowCursor)
         elif obj in (self, self.RibbonBar) and et == QEvent.MouseButtonPress and edges:
-            # self.windowHandle().startSystemResize(edges)
-            pass
+            if self.setting["SystemResize"]:
+                self.windowHandle().startSystemResize(edges)
+            
+        if not self.setting["SystemResize"]:
+            self.move_window(et, event, edges)
         
+
+        return super().eventFilter(obj, event)
+
+    def move_window(self, et, event, edges):
         if et == QEvent.MouseButtonPress and edges:
             self._Resize = True
         elif et == QEvent.MouseButtonRelease or self.windowState() != Qt.WindowNoState:
@@ -150,7 +134,7 @@ class MainWindow(QMainWindow):
             self._ResizeEdge = 'stop'
 
         #print(edges)
-        if self._Resize:
+        if not self._Resize:
             if edges == (Qt.LeftEdge | Qt.TopEdge):
                 self._ResizeEdge = 'LT'
             elif edges == (Qt.LeftEdge | Qt.BottomEdge):
@@ -179,7 +163,9 @@ class MainWindow(QMainWindow):
                 if abs(event.pos().y() - self.height()) < 100:
                     self.resize(self.width(), event.pos().y())
             elif self._ResizeEdge == 'RB':
-                self.resize(event.pos().x(), event.pos().y())
+                if abs(event.pos().y() - self.height()) < 100:
+                    self.resize(event.pos().x(), event.pos().y())
+                # self.resize(event.pos().x(), event.pos().y())
             elif self._ResizeEdge == 'L':
                 print(event.pos().x())
                 # self.setGeometry(self.x() + event.pos().x(), self.y(), self.width() - event.pos().x(), self.height())
@@ -187,32 +173,45 @@ class MainWindow(QMainWindow):
                 此处待实现
             '''
 
-        return super().eventFilter(obj, event)
-
     # 改变图标
     def changeEvent(self, event):
         if event.type() == QEvent.WindowStateChange:
             self.RibbonBar.change_fullscreen_button()
         super().changeEvent(event)
 
+    def new_page(self, file=None):
+        logging.info("新建页面")
 
-    def new_page(self, name=None):
+        x, y, w, h = self.x(), self.y(), self.width(), self.height()
+
+        # print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
         page = occ_page()
 
-        if name == None:
+        # self.setGeometry(x, y, w, h)
+
+        if file != None:
+            page.load_file(file)
+            page.path = file
+            page.name = os.path.basename(page.path)
+
+        if page.name == None:
             i = 0
             while 'new file '+str(i) in self.page_list.keys():
                 i += 1
             name = 'new file '+str(i)
 
-        page.name = name
-        self.page_list[name] = page
+        self.page_list[page.name] = page
         self.main_page_window.addTab(
-            self.page_list[name], QIcon('icon.svg'), name)
+            self.page_list[page.name], QIcon('icon.svg'), page.name)
+    
         return page
 
+    def refresh_occ(self):
+        for i in self.page_list.values():
+            i.canvas.InitDriver()
+
     def activity_page(self) -> occ_page:
-        self._activity_page = self.main_page_window.currentWidget()
+        self._activity_page = self.page_list[self.main_page_window.tabText(self.main_page_window.currentIndex())]
         return self._activity_page
 
 

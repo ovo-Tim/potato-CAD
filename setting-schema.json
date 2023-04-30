@@ -1,0 +1,16 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "SystemResize": {
+            "type": "boolean",
+            "default" : true,
+            "description": "启动系统窗口缩放，会调用 windowHandle().startSystemResize(edges) 函数。默认情况建议启动，实测Kwin存在问题"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "$schema",
+        "SystemResize"
+    ]
+}

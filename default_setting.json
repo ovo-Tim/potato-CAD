@@ -1,0 +1,4 @@
+{
+    "$schema": "./setting-schema.json",
+    "SystemResize" : true
+}
