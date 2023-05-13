@@ -1,13 +1,11 @@
 {
-    "example" : {
-        "path" : "example",
-        "introduce" : "一个测试插件",
-        "synopsis" : "一个测试插件",
-        "version" : 1.0
-    },
     "start page" : {
         "path" : "start_page",
         "introduce" : "起始页",
         "synopsis" : "起始页"
+    },
+    "sketcher" : {
+        "path" : "sketcher"
+        
     }
 }

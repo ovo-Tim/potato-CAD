@@ -62,7 +62,8 @@ class MainWindow(QMainWindow):
 
     def initUI(self):
         self.setWindowTitle(self.title)
-        self.setWindowFlags(Qt.CustomizeWindowHint)
+        if self.setting["SystemResize"]:
+            self.setWindowFlags(Qt.CustomizeWindowHint)
 
         self.setGeometry(35, 35, 500, 500)
 
@@ -79,8 +80,10 @@ class MainWindow(QMainWindow):
         self.main_page_window = QTabWidget()  # 主要的文件页面
         self.main_page_window.currentChanged.connect(self.refresh_occ)
         self.main_layout.addWidget(self.main_page_window)
-
-        self.new_page()
+        
+        # self.new_page()
+        # self.new_page()
+        # print(str(self.activity_page().canvas.width())+"   "+str(self.activity_page().canvas.height()))
 
         QCoreApplication.instance().installEventFilter(self)
         self._isResizeEnabled = True
@@ -121,8 +124,12 @@ class MainWindow(QMainWindow):
                 self.windowHandle().startSystemResize(edges)
             
         if not self.setting["SystemResize"]:
-            self.move_window(et, event, edges)
-        
+            '''
+                该功能目前存在严重问题，请使用正常边框
+            '''
+            pass
+            # self.move_window(et, event, edges)
+            # self.activity_page().display.View.MustBeResized()
 
         return super().eventFilter(obj, event)
 
@@ -199,6 +206,7 @@ class MainWindow(QMainWindow):
             while 'new file '+str(i) in self.page_list.keys():
                 i += 1
             name = 'new file '+str(i)
+            page.name = name
 
         self.page_list[page.name] = page
         self.main_page_window.addTab(
@@ -207,8 +215,9 @@ class MainWindow(QMainWindow):
         return page
 
     def refresh_occ(self):
-        for i in self.page_list.values():
-            i.canvas.InitDriver()
+        logging.debug("刷新OCC")
+        self.activity_page().InitDriver()
+        
 
     def activity_page(self) -> occ_page:
         self._activity_page = self.page_list[self.main_page_window.tabText(self.main_page_window.currentIndex())]

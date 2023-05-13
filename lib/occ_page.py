@@ -12,27 +12,52 @@ import OCC.Display.qtDisplay as qtDisplay
 
 import logging
 
-class occ_page(QWidget):
+# class occ_page(QWidget):
+#     '''
+#         一个包含OCC_canvas的页面。通常情况下，一个打开的3D文件(一个3D文件页面)就是一个occ_page
+#     '''
+
+#     def __init__(self):
+#         super().__init__()
+#         self.main_layout = QVBoxLayout(self)
+
+#         # 基本属性
+#         self.name = None
+#         self.path = None
+
+#         # 加载OCC
+#         self.canvas = qtDisplay.qtViewer3d(self)
+#         self.canvas.InitDriver()
+
+#         self.main_layout.addWidget(self.canvas)
+#         self.display = self.canvas._display
+
+#         self.setLayout(self.main_layout)
+
+#     def load_file(self, path):
+#         logging.info("加载文件:" + path)
+#         step = TopologyExplorer(read_step_file(path))
+#         for solid in step.solids():
+#             QApplication.processEvents()
+#             self.display.DisplayShape(solid)
+#         self.display.FitAll()
+
+class occ_page(qtDisplay.qtViewer3d):
     '''
         一个包含OCC_canvas的页面。通常情况下，一个打开的3D文件(一个3D文件页面)就是一个occ_page
     '''
 
     def __init__(self):
         super().__init__()
-        self.main_layout = QGridLayout(self)
 
         # 基本属性
         self.name = None
         self.path = None
 
         # 加载OCC
-        self.canvas = qtDisplay.qtViewer3d(self)
-        self.canvas.InitDriver()
+        self.InitDriver()
 
-        self.main_layout.addWidget(self.canvas)
-        self.display = self.canvas._display
-
-        self.setLayout(self.main_layout)
+        self.display = self._display
 
     def load_file(self, path):
         logging.info("加载文件:" + path)

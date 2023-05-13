@@ -29,7 +29,9 @@ class main():
         self.About_panel.addSmallButton(self.tr("访问主页"), icon=QIcon(
             __dir__ + "/icon.svg"), slot=lambda: webbrowser.open_new_tab("https://github.com/ovo-Tim/potato-CAD"))
     def open_file(self):
+        self.MainWindow._isResizeEnabled = False
         file_paths = QFileDialog.getOpenFileNames(self.MainWindow, self.tr("选择文件"), filter = 'step  files (*.step);; All files (*)')[0]
+        self.MainWindow._isResizeEnabled = True
         for i in file_paths:
             self.MainWindow.new_page(file = i)
 
