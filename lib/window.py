@@ -1,17 +1,52 @@
 from pyqtribbon import *
 from pyqtribbon.titlewidget import RibbonTitleWidget
-from PySide2.QtCore import *
-from PySide2.QtGui import *
-from PySide2.QtWidgets import *
+from PySide6.QtCore import *
+from PySide6.QtGui import *
+from PySide6.QtWidgets import *
 import os
 import sys
 import time
 import logging
-from occ_page import occ_page
+
+from OCC.Extend.DataExchange import read_step_file#STEP文件导入模块
+from OCC.Extend.TopologyUtils import TopologyExplorer#STEP文件导入模块后的拓扑几何分析模块
+
+from OCC.Display import OCCViewer
+from OCC.Display.backend import load_backend,get_loaded_backend
+# load_backend("qt-pyside6")
+import OCC.Display.qtDisplay as qtDisplay
 
 from pathlib import Path
 __dir__ = str(Path(os.path.dirname(__file__)).parent)
-os.environ['QT_API'] = 'pyside2'
+os.environ['QT_API'] = 'pyside6'
+
+import faulthandler
+faulthandler.enable()
+
+class occ_page(qtDisplay.qtViewer3d):
+    '''
+        一个包含OCC_canvas的页面。通常情况下，一个打开的3D文件(一个3D文件页面)就是一个occ_page
+    '''
+
+    def __init__(self):
+        super().__init__()
+
+        # 基本属性
+        self.name = None
+        self.path = None
+
+        # 加载OCC
+        self.InitDriver()
+
+        self.display = self._display
+
+    def load_file(self, path):
+        logging.info("加载文件:" + path)
+        step = TopologyExplorer(read_step_file(path))
+        for solid in step.solids():
+            QApplication.processEvents()
+            self.display.DisplayShape(solid)
+        self.display.FitAll()
 
 class my_RibbonBar(RibbonBar):
     def __init__(self, window, title):
@@ -72,18 +107,16 @@ class MainWindow(QMainWindow):
         self.main_widget.setLayout(self.main_layout)
         self.setCentralWidget(self.main_widget)
 
-        self.RibbonBar = my_RibbonBar(self, self.title)  # Ribbon 工具栏
-        self.setMenuBar(self.RibbonBar)
-
         self.page_list = {}
         self._activity_page = None
         self.main_page_window = QTabWidget()  # 主要的文件页面
         self.main_page_window.currentChanged.connect(self.refresh_occ)
         self.main_layout.addWidget(self.main_page_window)
         
-        # self.new_page()
-        # self.new_page()
-        # print(str(self.activity_page().canvas.width())+"   "+str(self.activity_page().canvas.height()))
+        self.new_page() # 很奇怪，如果我不在此处加载new_page然后创建RibbonBar会导致lib加载失败，详见github.com/tpaviot/pythonocc-core/issues/1214
+
+        self.RibbonBar = my_RibbonBar(self, self.title)  # Ribbon 工具栏
+        self.setMenuBar(self.RibbonBar)
 
         QCoreApplication.instance().installEventFilter(self)
         self._isResizeEnabled = True
@@ -189,9 +222,6 @@ class MainWindow(QMainWindow):
     def new_page(self, file=None):
         logging.info("新建页面")
 
-        x, y, w, h = self.x(), self.y(), self.width(), self.height()
-
-        # print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
         page = occ_page()
 
         # self.setGeometry(x, y, w, h)
@@ -216,11 +246,10 @@ class MainWindow(QMainWindow):
 
     def refresh_occ(self):
         logging.debug("刷新OCC")
+        # self.activity_page().display.SetSize(self.activity_page().width(), self.activity_page().height())
         self.activity_page().InitDriver()
         
 
     def activity_page(self) -> occ_page:
         self._activity_page = self.page_list[self.main_page_window.tabText(self.main_page_window.currentIndex())]
         return self._activity_page
-
-

@@ -129,3 +129,4 @@ dmypy.json
 __resources__
 .vscode/
 potato-CAD.code-workspace
+.ruff_cache
