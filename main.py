@@ -1,19 +1,22 @@
 #! /bin/python3
-import sys,os,pathlib
+import sys,os,pathlib  # noqa: E401
 __dir__ = os.path.dirname(__file__)
 
 import logging
 sys.path.append(__dir__ + "/lib")
 
-from PySide2.QtWidgets import *
-from PySide2.QtGui import *
+from PySide6.QtWidgets import *
+from PySide6.QtGui import *
 
 from OCC.Display.backend import load_backend,get_loaded_backend
-load_backend("qt-pyside2")
+load_backend("qt-pyside6")
 
 import plugin
 import ujson as json
-from window import *
+from window import MainWindow
+
+import faulthandler
+faulthandler.enable()
 
 class Main():
     def __init__(self):
@@ -46,5 +49,5 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     win = Main()
     win.main_window.show()
-    app.exec_()
+    app.exec()
 
