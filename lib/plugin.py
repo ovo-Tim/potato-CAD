@@ -3,27 +3,27 @@ import ujson as json
 import logging
 import os,sys
 
+__dir__ = os.path.join(os.path.dirname(__file__), '..')
+
 logging.basicConfig(level=logging.DEBUG)
 
 class plugins():
     def __init__(self, plugins_path):
         self.plugins = {}  #插件
         self.plugins_path = plugins_path # 插件文件夹路径
+        self.core_path = os.path.join(__dir__, 'core')
 
         sys.path.append(self.plugins_path)
+        sys.path.append(self.core_path)
+
+    def load_core(self, *args, **kwargs):
+        for plugin_path in os.listdir(self.core_path):
+            if not plugin_path.startswith("_"):
+                # 获取插件信息
+                logging.info("加载插件:{0}".format(plugin_path))
+                self.plugins[plugin_path] = __import__(plugin_path).main(*args, **kwargs)
 
     def load(self, *args, **kwargs):
-        # for plugin_path in os.listdir(self.plugins_path):
-        #     if not filename.startswith("_"):
-        #         # 获取插件信息
-        #         with open( os.path.join(plugin_path,"info.json") , "r") as plugin_information_f:
-        #             plugin_information = json.load(plugin_information_f)
-        #             plugin_name = plugin_information.name
-        #             self.plugin_informations[plugin_name] = plugin_information
-        #         logging.info("加载插件:{0} 在位置:{1}".format(plugin_name,plugin_path))
-        #         self.plugins[plugin_name] = __import__(plugin_path)
-
-
         with open(os.path.join(self.plugins_path,"plugins.json"),'r') as plugin_information_f:
             self.plugins_information = json.load(plugin_information_f) #获取插件配置文件
 
@@ -33,8 +33,11 @@ class plugins():
             plugin_path = os.path.join(self.plugins_path, plugin_information['path'])
             logging.debug("位置:{0} 配置信息:{1}".format(plugin_path,plugin_information))
 
-            self.plugins[plugin_name] = __import__(plugin_information['path']).main( *args, **kwargs)
+            self.plugins[plugin_name] = __import__(plugin_information['path']).main(*args, **kwargs)
 
+
+    def __getitem__(self, key):
+        return self.plugins[key]
 
 if __name__ == '__main__':
     p = plugins("plugins")
