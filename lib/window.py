@@ -21,7 +21,7 @@ __dir__ = str(Path(os.path.dirname(__file__)).parent)
 os.environ['QT_API'] = 'pyside6'
 
 import faulthandler
-faulthandler.enable()
+faulthandler.enable()   
 
 class occ_page(qtDisplay.qtViewer3d):
     '''
@@ -83,9 +83,8 @@ class my_RibbonBar(RibbonBar):
         else:
             self.main_window.showMaximized()
 
-
 class MainWindow(QMainWindow):
-    BORDER_WIDTH = 3
+    BORDER_WIDTH = 5
     def __init__(self, setting: dict):
         super().__init__()
         logging.debug("window id:" + str(self.winId()))
@@ -97,8 +96,10 @@ class MainWindow(QMainWindow):
 
     def initUI(self):
         self.setWindowTitle(self.title)
-        if self.setting["SystemResize"]:
-            self.setWindowFlags(Qt.CustomizeWindowHint)
+        if self.setting["FramelessWindow"]:
+            # self.setWindowFlags(Qt.CustomizeWindowHint)
+            self.setWindowFlags(Qt.FramelessWindowHint)
+            logging.info("无边框模式已启动")
 
         self.setGeometry(35, 35, 500, 500)
 
@@ -120,8 +121,9 @@ class MainWindow(QMainWindow):
 
         QCoreApplication.instance().installEventFilter(self)
         self._isResizeEnabled = True
-        self._Resize = False
-        self._ResizeEdge = 'stop'
+        self._Resize = self.setting["FramelessWindow"]
+
+        # self.new_page()
 
     def eventFilter(self, obj, event):
         '''
@@ -131,7 +133,7 @@ class MainWindow(QMainWindow):
         if et != QEvent.MouseButtonRelease and et != QEvent.MouseButtonPress and et != QEvent.MouseMove or not self._isResizeEnabled:
             return False
         edges = Qt.Edge(0)
-        pos = event.globalPos() - self.pos()
+        pos = event.globalPos()
         if pos.x() < self.BORDER_WIDTH:
             edges |= Qt.LeftEdge
         if pos.x() >= self.width()-self.BORDER_WIDTH:
@@ -153,65 +155,9 @@ class MainWindow(QMainWindow):
             else:
                 self.setCursor(Qt.ArrowCursor)
         elif obj in (self, self.RibbonBar) and et == QEvent.MouseButtonPress and edges:
-            if self.setting["SystemResize"]:
-                self.windowHandle().startSystemResize(edges)
-            
-        if not self.setting["SystemResize"]:
-            '''
-                该功能目前存在严重问题，请使用正常边框
-            '''
-            pass
-            # self.move_window(et, event, edges)
-            # self.activity_page().display.View.MustBeResized()
+            self.windowHandle().startSystemResize(edges)
 
         return super().eventFilter(obj, event)
-
-    def move_window(self, et, event, edges):
-        if et == QEvent.MouseButtonPress and edges:
-            self._Resize = True
-        elif et == QEvent.MouseButtonRelease or self.windowState() != Qt.WindowNoState:
-            self._Resize = False
-            self._ResizeEdge = 'stop'
-
-        #print(edges)
-        if not self._Resize:
-            if edges == (Qt.LeftEdge | Qt.TopEdge):
-                self._ResizeEdge = 'LT'
-            elif edges == (Qt.LeftEdge | Qt.BottomEdge):
-                self._ResizeEdge = 'LB'
-            elif edges == (Qt.RightEdge | Qt.TopEdge):
-                self._ResizeEdge = 'RT'
-            elif edges == (Qt.RightEdge | Qt.BottomEdge):
-                self._ResizeEdge = 'RB'
-            elif edges & Qt.RightEdge:
-                self._ResizeEdge = 'R'
-            elif edges & Qt.LeftEdge:
-                self._ResizeEdge = 'L'
-            elif edges & Qt.BottomEdge:
-                self._ResizeEdge = 'B'
-            elif edges & Qt.TopEdge:
-                self._ResizeEdge = 'T'
-
-        # 手动实
-        if self._Resize:
-            if self._ResizeEdge == 'R':
-                self.resize(event.pos().x(), self.height())
-            elif self._ResizeEdge == 'B':
-                # time.sleep(0.1)
-                # print(event.pos().y())
-                # 奇怪的BUG,获取到鼠标y坐标，3个中只有一个是正常的
-                if abs(event.pos().y() - self.height()) < 100:
-                    self.resize(self.width(), event.pos().y())
-            elif self._ResizeEdge == 'RB':
-                if abs(event.pos().y() - self.height()) < 100:
-                    self.resize(event.pos().x(), event.pos().y())
-                # self.resize(event.pos().x(), event.pos().y())
-            elif self._ResizeEdge == 'L':
-                print(event.pos().x())
-                # self.setGeometry(self.x() + event.pos().x(), self.y(), self.width() - event.pos().x(), self.height())
-            '''
-                此处待实现
-            '''
 
     # 改变图标
     def changeEvent(self, event):
