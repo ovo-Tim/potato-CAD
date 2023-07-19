@@ -60,6 +60,7 @@ class my_RibbonBar(RibbonBar):
 
         self.setting_button = QToolButton(
             self, icon=QIcon(__dir__ + '/icons/gear.svg'))
+        self._titleWidget.addRightToolButton(self.setting_button)
 
         self.minimize_button = QToolButton(
             self, icon=QIcon(__dir__ + '/icons/minimize.svg'))
