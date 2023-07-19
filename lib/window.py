@@ -7,6 +7,8 @@ import os
 import sys
 import time
 import logging
+import ujson as json
+import qt_json_setting
 
 from OCC.Extend.DataExchange import read_step_file#STEP文件导入模块
 from OCC.Extend.TopologyUtils import TopologyExplorer#STEP文件导入模块后的拓扑几何分析模块
@@ -20,8 +22,8 @@ from pathlib import Path
 __dir__ = str(Path(os.path.dirname(__file__)).parent)
 os.environ['QT_API'] = 'pyside6'
 
-import faulthandler
-faulthandler.enable()   
+# import faulthandler
+# faulthandler.enable()
 
 class occ_page(qtDisplay.qtViewer3d):
     '''
@@ -55,6 +57,10 @@ class my_RibbonBar(RibbonBar):
         self.main_window = window
 
         # 添加窗口按钮
+
+        self.setting_button = QToolButton(
+            self, icon=QIcon(__dir__ + '/icons/gear.svg'))
+
         self.minimize_button = QToolButton(
             self, icon=QIcon(__dir__ + '/icons/minimize.svg'))
         self.minimize_button.clicked.connect(self.main_window.showMinimized)
@@ -85,10 +91,14 @@ class my_RibbonBar(RibbonBar):
 
 class MainWindow(QMainWindow):
     BORDER_WIDTH = 5
-    def __init__(self, setting: dict):
+    def __init__(self, path):
         super().__init__()
         logging.debug("window id:" + str(self.winId()))
-        self.setting = setting
+
+        self.path = path
+        
+        with open(self.path.setting_path) as f:
+            self.setting = json.decode(f.read())
         self.title = "potato-CAD"
         self.initUI()
 
@@ -120,8 +130,7 @@ class MainWindow(QMainWindow):
         self.setMenuBar(self.RibbonBar)
 
         QCoreApplication.instance().installEventFilter(self)
-        self._isResizeEnabled = True
-        self._Resize = self.setting["FramelessWindow"]
+        self._isResizeEnabled = self.setting["FramelessWindow"]
 
         # self.new_page()
 
