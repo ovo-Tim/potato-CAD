@@ -3,15 +3,13 @@ import ujson as json
 import logging
 import os,sys
 
-__dir__ = os.path.join(os.path.dirname(__file__), '..')
-
 logging.basicConfig(level=logging.DEBUG)
 
 class plugins():
-    def __init__(self, plugins_path):
+    def __init__(self, path):
         self.plugins = {}  #插件
-        self.plugins_path = plugins_path # 插件文件夹路径
-        self.core_path = os.path.join(__dir__, 'core')
+        self.plugins_path = path.plugin_path # 插件文件夹路径
+        self.core_path = os.path.join(path.root_path, 'core')
 
         sys.path.append(self.plugins_path)
         sys.path.append(self.core_path)
