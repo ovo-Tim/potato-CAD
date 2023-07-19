@@ -1,10 +1,19 @@
 #! /bin/python3
-import sys,os,pathlib  # noqa: E401
+import sys, os, pathlib, platform, subprocess  # noqa: E401
 
 import logging
+logging.basicConfig(level=logging.DEBUG)
 
 __dir__ = os.path.dirname(__file__)
 sys.path.append(__dir__ + "/lib")
+
+# Support wayland (github.com/tpaviot/pythonocc-core/issues/1230)
+if platform.system() == 'Linux':
+    if os.popen('echo $XDG_SESSION_TYPE').read() == 'wayland\n':
+        logging.info("Wayland. Set QT_QPA_PLATFORM=xcb")
+        # os.system('export QT_QPA_PLATFORM=xcb')
+        # subprocess.call('export QT_QPA_PLATFORM=xcb', shell=True)
+        os.environ['QT_QPA_PLATFORM'] = 'xcb'
 
 from PySide6.QtWidgets import *
 from PySide6.QtGui import *
@@ -15,8 +24,8 @@ load_backend("qt-pyside6")
 import plugin
 from window import MainWindow
 
-import faulthandler
-faulthandler.enable()
+# import faulthandler
+# faulthandler.enable()
 
 class path():
     app_path = os.path.join(pathlib.Path.home(), '.potato-CAD')
