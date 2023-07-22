@@ -51,15 +51,17 @@ class occ_page(qtDisplay.qtViewer3d):
         self.display.FitAll()
 
 class my_RibbonBar(RibbonBar):
-    def __init__(self, window, title):
+    def __init__(self, window, title, path):
         super().__init__()
 
         self.main_window = window
+        self.path = path
 
         # 添加窗口按钮
 
         self.setting_button = QToolButton(
             self, icon=QIcon(__dir__ + '/icons/gear.svg'))
+        self.setting_button.clicked.connect(self.open_setting_win)
         self._titleWidget.addRightToolButton(self.setting_button)
 
         self.minimize_button = QToolButton(
@@ -90,6 +92,9 @@ class my_RibbonBar(RibbonBar):
         else:
             self.main_window.showMaximized()
 
+    def open_setting_win(self):
+        qt_json_setting.seting_window(self.path.setting_path, os.path.join(self.path.root_path, 'setting-schema.json')).show()
+
 class MainWindow(QMainWindow):
     BORDER_WIDTH = 5
     def __init__(self, path):
@@ -107,7 +112,7 @@ class MainWindow(QMainWindow):
 
     def initUI(self):
         self.setWindowTitle(self.title)
-        if self.setting["FramelessWindow"]:
+        if self.setting['window']['FramelessWindow']:
             # self.setWindowFlags(Qt.CustomizeWindowHint)
             self.setWindowFlags(Qt.FramelessWindowHint)
             logging.info("无边框模式已启动")
@@ -127,11 +132,11 @@ class MainWindow(QMainWindow):
         
         self.new_page() # 很奇怪，如果我不在此处加载new_page然后创建RibbonBar会导致lib加载失败，详见github.com/tpaviot/pythonocc-core/issues/1214
 
-        self.RibbonBar = my_RibbonBar(self, self.title)  # Ribbon 工具栏
+        self.RibbonBar = my_RibbonBar(self, self.title, self.path)  # Ribbon 工具栏
         self.setMenuBar(self.RibbonBar)
 
         QCoreApplication.instance().installEventFilter(self)
-        self._isResizeEnabled = self.setting["FramelessWindow"]
+        self._isResizeEnabled = self.setting['window']['FramelessWindow']
 
         # self.new_page()
 
