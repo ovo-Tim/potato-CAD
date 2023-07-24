@@ -1,3 +1,5 @@
 {
-    "FramelessWindow" : true
+    "window":{
+        "FramelessWindow" : true
+    }
 }

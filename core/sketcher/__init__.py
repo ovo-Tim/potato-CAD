@@ -1,12 +1,11 @@
 from PySide6.QtGui import *
 from PySide6.QtWidgets import *
-import webbrowser
 import os
 import sys
 from pathlib import Path
 __dir__ = str(Path(os.path.dirname(__file__)).parent.parent)
 
-sys.path.append("../../")
+sys.path.append(__dir__)
 import main as mainFile
 
 class main():

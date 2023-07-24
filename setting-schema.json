@@ -2,10 +2,16 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
     "properties": {
-        "FramelessWindow": {
-            "type": "boolean",
-            "default" : true,
-            "description": "使用无边框窗口，实测KWin存在问题"
+        "window":{
+            "title": "窗口",
+            "properties": {
+                "FramelessWindow": {
+                    "title": "无边框窗口",
+                    "type": "boolean",
+                    "default" : true,
+                    "description": "使用无边框窗口，实测KWin存在问题"
+                }
+            }
         }
     },
     "additionalProperties": false,

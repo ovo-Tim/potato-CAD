@@ -27,6 +27,8 @@ from window import MainWindow
 # import faulthandler
 # faulthandler.enable()
 
+SAFE_MOD = False
+
 class path():
     app_path = os.path.join(pathlib.Path.home(), '.potato-CAD')
     logging.info("软件目录:" + app_path)
@@ -47,9 +49,11 @@ class Main():
         self.load_the_settings()
 
         self.main_window = MainWindow(path)
-        self.plugins = plugin.plugins(path)
-        self.plugins.load_core(self)
-        # self.plugins.load(self) 
+
+        if not SAFE_MOD:
+            self.plugins = plugin.plugins(path)
+            self.plugins.load_core(self)
+            # self.plugins.load(self) 
         
     def load_the_settings(self): 
         # 判断用户配置文件是否存在
