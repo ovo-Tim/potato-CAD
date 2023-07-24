@@ -10,45 +10,15 @@ import logging
 import ujson as json
 import qt_json_setting
 
-from OCC.Extend.DataExchange import read_step_file#STEP文件导入模块
-from OCC.Extend.TopologyUtils import TopologyExplorer#STEP文件导入模块后的拓扑几何分析模块
-
-from OCC.Display import OCCViewer
-from OCC.Display.backend import load_backend,get_loaded_backend
-# load_backend("qt-pyside6")
-import OCC.Display.qtDisplay as qtDisplay
-
 from pathlib import Path
+
+from occ_page import occ_page
+
 __dir__ = str(Path(os.path.dirname(__file__)).parent)
 os.environ['QT_API'] = 'pyside6'
 
 # import faulthandler
 # faulthandler.enable()
-
-class occ_page(qtDisplay.qtViewer3d):
-    '''
-        一个包含OCC_canvas的页面。通常情况下，一个打开的3D文件(一个3D文件页面)就是一个occ_page
-    '''
-
-    def __init__(self):
-        super().__init__()
-
-        # 基本属性
-        self.name = None
-        self.path = None
-
-        # 加载OCC
-        self.InitDriver()
-
-        self.display = self._display
-
-    def load_file(self, path):
-        logging.info("加载文件:" + path)
-        step = TopologyExplorer(read_step_file(path))
-        for solid in step.solids():
-            QApplication.processEvents()
-            self.display.DisplayShape(solid)
-        self.display.FitAll()
 
 class my_RibbonBar(RibbonBar):
     def __init__(self, window, title, path):
@@ -135,7 +105,8 @@ class MainWindow(QMainWindow):
         self.RibbonBar = my_RibbonBar(self, self.title, self.path)  # Ribbon 工具栏
         self.setMenuBar(self.RibbonBar)
 
-        QCoreApplication.instance().installEventFilter(self)
+        if self.setting['window']['FramelessWindow']:
+            QCoreApplication.instance().installEventFilter(self)
         self._isResizeEnabled = self.setting['window']['FramelessWindow']
 
         # self.new_page()
