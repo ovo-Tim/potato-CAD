@@ -1,0 +1,1 @@
+pyside6-lupdate main.py lib/window.py lib/occ_page.py lib/plugin.py core/sketcher/__init__.py core/start_page/__init__.py -ts localization/zh_cn.ts
