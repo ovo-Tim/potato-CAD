@@ -7,12 +7,12 @@ import os
 import sys
 import time
 import logging
-import ujson as json
 import qt_json_setting
 
 from pathlib import Path
 
 from occ_page import occ_page
+import share_var
 
 __dir__ = str(Path(os.path.dirname(__file__)).parent)
 os.environ['QT_API'] = 'pyside6'
@@ -66,14 +66,14 @@ class my_RibbonBar(RibbonBar):
 
 class MainWindow(QMainWindow):
     BORDER_WIDTH = 5
-    def __init__(self, share_var):
+    def __init__(self):
         super().__init__()
         logging.debug("window id:" + str(self.winId()))
 
         self.share_var = share_var
         
-        with open(self.share_var.setting_path) as f:
-            self.setting = json.decode(f.read())
+        self.setting = share_var.setting
+
         self.title = "potato-CAD"
         self.initUI()
 

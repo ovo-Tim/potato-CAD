@@ -3,17 +3,23 @@
     "type": "object",
     "properties": {
         "window":{
-            "title": "窗口",
+            "title": "window",
             "properties": {
                 "FramelessWindow": {
-                    "title": "无边框窗口",
+                    "title": "Frameless Window",
                     "type": "boolean",
                     "default" : true,
-                    "description": "使用无边框窗口，实测KWin存在问题"
+                    "description": "There are some problem on KWin. If your WM is KWin, please turn off."
+                    },
+                "language": {
+                    "title": "language",
+                    "type": "string",
+                    "default" : "system",
+                    "description": "Select your language. If the value is system, set to the system language"
+                    }
                 }
             }
-        }
-    },
+        },
     "additionalProperties": false,
     "required": [
         "$schema",

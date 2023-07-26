@@ -10,22 +10,20 @@ from OCC.Core.Aspect import *
 from OCC.Core.TopoDS import TopoDS_Shape
 from OCC.Core.BRep import BRep_Builder
 import logging
+import share_var
 
 from PySide6.QtWidgets import QApplication
 
 class my_ViewCube(AIS_ViewCube):
-    def __init__(self, tr = lambda text:text):
+    def __init__(self):
         super().__init__()
-        self.tr = tr
 
-        print(self.tr("test"))
-
-        self.SetBoxSideLabel(V3d_Xpos, self.tr("Right"))
-        self.SetBoxSideLabel(V3d_Ypos, self.tr("Back"))
-        self.SetBoxSideLabel(V3d_Zpos, self.tr("Top"))
-        self.SetBoxSideLabel(V3d_Xneg, self.tr("Left"))
-        self.SetBoxSideLabel(V3d_Yneg, self.tr("Front"))
-        self.SetBoxSideLabel(V3d_Zneg, self.tr("Bottom"))
+        self.SetBoxSideLabel(V3d_Xpos, _("Right"))
+        self.SetBoxSideLabel(V3d_Ypos, _("Back"))
+        self.SetBoxSideLabel(V3d_Zpos, _("Top"))
+        self.SetBoxSideLabel(V3d_Xneg, _("Left"))
+        self.SetBoxSideLabel(V3d_Yneg, _("Front"))
+        self.SetBoxSideLabel(V3d_Zneg, _("Bottom"))
         self.SetFontHeight( self.Size() * 0.38)
         self.SetTransparency(0.6)
 
@@ -65,7 +63,7 @@ class occ_page(qtDisplay.qtViewer3d):
         self.InitDriver()
         self.display = self._display
 
-        self.ViewCube = my_ViewCube(tr=self.tr)
+        self.ViewCube = my_ViewCube()
         self.display.Context.Display(self.ViewCube, True)
         
     
