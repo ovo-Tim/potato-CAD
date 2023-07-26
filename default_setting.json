@@ -1,5 +1,6 @@
 {
     "window":{
-        "FramelessWindow" : true
+        "FramelessWindow" : true,
+        "language" : "system"
     }
 }

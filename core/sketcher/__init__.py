@@ -13,4 +13,4 @@ class main():
         self.mainClass = mainClass
         self.MainWindow = self.mainClass.main_window
         ribbonbar = self.MainWindow.RibbonBar
-        self.tr = self.mainClass.main_window.tr
+        self.tr = self.MainWindow.tr

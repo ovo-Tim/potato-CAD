@@ -12,25 +12,28 @@ sys.path.append("../../")
 import main as mainFile
 
 class main():
-    def __init__(self, mainClass: mainFile.Main):
-        self.mainClass = mainClass
-        self.MainWindow = self.mainClass.main_window
+    def __init__(self, share_var: mainFile.share_var):
+        self.mainClass = share_var.main_class
+        self.MainWindow = share_var.main_window
         ribbonbar = self.MainWindow.RibbonBar
-        self.tr = self.mainClass.main_window.tr
 
         self.category1 = ribbonbar.addCategory("Home")
 
-        self.file_panel = self.category1.addPanel(self.tr("文件"))
+        self.file_panel = self.category1.addPanel(_("File"))
         self.file_panel.addLargeButton(
-            self.tr("打开文件"), icon=QIcon(__dir__ + '/icons/open_file.svg'), slot=self.open_file)
+            _("Open file"), icon=QIcon(__dir__ + '/icons/open_file.svg'), slot=self.open_file)
+        
+        self.file_panel.addLargeButton(
+            _("New page"), icon=QIcon(__dir__ + '/icons/open_file.svg'), slot=self.MainWindow.new_page)
 
         self.About_panel = self.category1.addPanel(
-            self.tr("关于"), showPanelOptionButton=False)
-        self.About_panel.addSmallButton(self.tr("访问主页"), icon=QIcon(
+            _("About"), showPanelOptionButton=False)
+        self.About_panel.addSmallButton(_("Home page"), icon=QIcon(
             __dir__ + "/icon.svg"), slot=lambda: webbrowser.open_new_tab("https://github.com/ovo-Tim/potato-CAD"))
+        
     def open_file(self):
         self.MainWindow._isResizeEnabled = False
-        file_paths = QFileDialog.getOpenFileNames(self.MainWindow, self.tr("选择文件"), filter = 'step  files (*.step);; All files (*)')[0]
+        file_paths = QFileDialog.getOpenFileNames(self.MainWindow, _("select file"), filter = 'step files (*.step);; brep files (*.brep);; iges files (*.iges);; stl files (*.stl);; All files (*)')[0]
         self.MainWindow._isResizeEnabled = True
         for i in file_paths:
             self.MainWindow.new_page(file = i)

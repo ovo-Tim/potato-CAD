@@ -18,7 +18,7 @@ class plugins():
         for plugin_path in os.listdir(self.core_path):
             if not plugin_path.startswith("_"):
                 # 获取插件信息
-                logging.info("加载插件:{0}".format(plugin_path))
+                logging.info("load plugin:{0}".format(plugin_path))
                 self.plugins[plugin_path] = __import__(plugin_path).main(*args, **kwargs)
 
     def load(self, *args, **kwargs):
@@ -26,10 +26,10 @@ class plugins():
             self.plugins_information = json.load(plugin_information_f) #获取插件配置文件
 
         for plugin_name,plugin_information in self.plugins_information.items():
-            logging.info("开始加载:{}".format(plugin_name))
+            logging.info("Loading:{}".format(plugin_name))
 
             plugin_path = os.path.join(self.plugins_path, plugin_information['path'])
-            logging.debug("位置:{0} 配置信息:{1}".format(plugin_path,plugin_information))
+            logging.debug("Path:{0} config:{1}".format(plugin_path,plugin_information))
 
             self.plugins[plugin_name] = __import__(plugin_information['path']).main(*args, **kwargs)
 

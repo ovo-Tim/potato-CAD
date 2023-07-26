@@ -7,12 +7,12 @@ import os
 import sys
 import time
 import logging
-import ujson as json
 import qt_json_setting
 
 from pathlib import Path
 
 from occ_page import occ_page
+import share_var
 
 __dir__ = str(Path(os.path.dirname(__file__)).parent)
 os.environ['QT_API'] = 'pyside6'
@@ -21,14 +21,13 @@ os.environ['QT_API'] = 'pyside6'
 # faulthandler.enable()
 
 class my_RibbonBar(RibbonBar):
-    def __init__(self, window, title, path):
+    def __init__(self, window, title, share_var):
         super().__init__()
 
         self.main_window = window
-        self.path = path
+        self.share_var = share_var
 
         # 添加窗口按钮
-
         self.setting_button = QToolButton(
             self, icon=QIcon(__dir__ + '/icons/gear.svg'))
         self.setting_button.clicked.connect(self.open_setting_win)
@@ -63,18 +62,18 @@ class my_RibbonBar(RibbonBar):
             self.main_window.showMaximized()
 
     def open_setting_win(self):
-        qt_json_setting.seting_window(self.path.setting_path, os.path.join(self.path.root_path, 'setting-schema.json')).show()
+        qt_json_setting.seting_window(self.share_var.setting_path, os.path.join(self.share_var.root_path, 'setting-schema.json')).show()
 
 class MainWindow(QMainWindow):
     BORDER_WIDTH = 5
-    def __init__(self, path):
+    def __init__(self):
         super().__init__()
         logging.debug("window id:" + str(self.winId()))
 
-        self.path = path
+        self.share_var = share_var
         
-        with open(self.path.setting_path) as f:
-            self.setting = json.decode(f.read())
+        self.setting = share_var.setting
+
         self.title = "potato-CAD"
         self.initUI()
 
@@ -85,7 +84,7 @@ class MainWindow(QMainWindow):
         if self.setting['window']['FramelessWindow']:
             # self.setWindowFlags(Qt.CustomizeWindowHint)
             self.setWindowFlags(Qt.FramelessWindowHint)
-            logging.info("无边框模式已启动")
+            logging.info("Frameless window") # 无边框模式已启动
 
         self.setGeometry(35, 35, 500, 500)
 
@@ -102,7 +101,7 @@ class MainWindow(QMainWindow):
         
         self.new_page() # 很奇怪，如果我不在此处加载new_page然后创建RibbonBar会导致lib加载失败，详见github.com/tpaviot/pythonocc-core/issues/1214
 
-        self.RibbonBar = my_RibbonBar(self, self.title, self.path)  # Ribbon 工具栏
+        self.RibbonBar = my_RibbonBar(self, self.title, self.share_var)  # Ribbon 工具栏
         self.setMenuBar(self.RibbonBar)
 
         if self.setting['window']['FramelessWindow']:
@@ -152,7 +151,7 @@ class MainWindow(QMainWindow):
         super().changeEvent(event)
 
     def new_page(self, file=None):
-        logging.info("新建页面")
+        logging.info("New page") # 新建页面
 
         page = occ_page()
 
@@ -177,11 +176,10 @@ class MainWindow(QMainWindow):
         return page
 
     def refresh_occ(self):
-        logging.debug("刷新OCC")
+        logging.debug("refresh viewer")
         # self.activity_page().display.SetSize(self.activity_page().width(), self.activity_page().height())
         self.activity_page().InitDriver()
         
-
     def activity_page(self) -> occ_page:
         self._activity_page = self.page_list[self.main_page_window.tabText(self.main_page_window.currentIndex())]
         return self._activity_page
