@@ -1,8 +1,11 @@
 import os
 import logging
 import pathlib
+import window
 
 __dir__ = os.path.join(os.path.dirname(__file__), '..')
+
+main_window:window.MainWindow = None
 
 app_path = os.path.join(pathlib.Path.home(), '.potato-CAD')
 logging.info("software path:" + app_path)

@@ -23,6 +23,15 @@ from OCC.Display.backend import load_backend,get_loaded_backend
 load_backend("qt-pyside6")
 
 import share_var
+
+import plugin
+from window import MainWindow
+
+# import faulthandler
+# faulthandler.enable()
+
+SAFE_MOD = False
+
 # 加载配置文件
 if not os.path.exists(share_var.app_path):
     os.mkdir(share_var.app_path)
@@ -38,25 +47,21 @@ with open(share_var.setting_path) as f:
 
 # 设置国际化
 lang_domain = 'default'
-lang_localedir = os.path.abspath("locale")
+# lang_localedir = os.path.abspath("locale")
 if share_var.setting['window']['language'] == 'system':
     lang = getlocale()[0]
 else:
-    lang = share_var.setting_path['window']['language']
-if os.path.exists(os.path.join('locale/', lang)): # 检查语言是否存在
+    lang = share_var.setting['window']['language']
+
+lang_localedir = os.path.join(share_var.root_path, 'locale/')
+if os.path.exists(os.path.join(lang_localedir, lang)): # 检查语言是否存在
     logging.info(f"Found language:{lang}")
-    translation = gettext.translation(domain=lang_domain, localedir=lang_localedir)
+    translation = gettext.translation(domain=lang_domain, localedir=lang_localedir, languages=[lang])
+    translation.install()
 else:
+    gettext.install(None)
     logging.info(f"Can't find:{lang}.Use english")
-translation.install()
 
-import plugin
-from window import MainWindow
-
-# import faulthandler
-# faulthandler.enable()
-
-SAFE_MOD = False
 
 class Main():
     def __init__(self):
@@ -66,10 +71,11 @@ class Main():
         self.main_window = MainWindow()
         share_var.main_window = self.main_window
 
+        print(share_var)
         # 加载插件
         if not SAFE_MOD:
-            self.plugins = plugin.plugins(share_var)
-            self.plugins.load_core(share_var)
+            self.plugins = plugin.plugins()
+            self.plugins.load_core()
             # self.plugins.load(self) 
 
         self.main_window.show()
