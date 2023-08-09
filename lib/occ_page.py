@@ -47,7 +47,6 @@ class my_ViewCube(AIS_ViewCube):
         
         super().SetSize(theValue, theToAdaptAnother)
         
-
 class occ_page(qtDisplay.qtViewer3d):
     '''
         一个包含OCC_canvas的页面。通常情况下，一个打开的3D文件(一个3D文件页面)就是一个occ_page
@@ -56,16 +55,15 @@ class occ_page(qtDisplay.qtViewer3d):
         super().__init__()
 
         # 基本属性
-        self.name = None
-        self.path = None
+        self.name: str = None
+        self.path: str = None
 
         # 加载OCC
-        self.InitDriver()
+        # self.InitDriver()
         self.display = self._display
 
         self.ViewCube = my_ViewCube()
         self.display.Context.Display(self.ViewCube, True)
-        
     
     # def resizeEvent(self, event):
     #     w = event.size().width()
@@ -77,6 +75,8 @@ class occ_page(qtDisplay.qtViewer3d):
     def load_file(self, path: str):
         logging.info("Load file:" + path)
         suffix = path.split('.')[-1].lower()
+
+        QApplication.processEvents()
 
         if suffix == 'brep':
             logging.info("Found BREP,loading")
@@ -104,3 +104,8 @@ class occ_page(qtDisplay.qtViewer3d):
                 self.display.DisplayShape(solid, update=True)
         
         self.display.FitAll()
+
+        self.InitDriver()
+
+    def export(self):
+        return self.display.shapes
