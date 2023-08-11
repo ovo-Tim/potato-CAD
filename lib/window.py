@@ -86,7 +86,7 @@ class MainWindow(QMainWindow):
             self.setWindowFlags(Qt.FramelessWindowHint)
             logging.info("Frameless window") # 无边框模式已启动
 
-        self.setGeometry(35, 35, 500, 500)
+        self.setGeometry(35, 35, 2300, 1200)
 
         self.main_widget = QWidget()
         self.main_layout = QVBoxLayout()
@@ -155,13 +155,6 @@ class MainWindow(QMainWindow):
 
         page = occ_page()
 
-        # self.setGeometry(x, y, w, h)
-
-        if file != None:
-            page.load_file(file)
-            page.path = file
-            page.name = os.path.basename(page.path)
-
         if page.name == None:
             i = 0
             while 'new file '+str(i) in self.page_list.keys():
@@ -171,8 +164,15 @@ class MainWindow(QMainWindow):
 
         self.page_list[page.name] = page
         self.main_page_window.addTab(
-            self.page_list[page.name], QIcon('icon.svg'), page.name)
-    
+            self.page_list[page.name], QIcon(share_var.root_path + '/icon.svg'), page.name)
+        
+        page.InitDriver()
+
+        if file != None:
+            page.load_file(file)
+            page.path = file
+            page.name = os.path.basename(page.path)
+
         return page
 
     def refresh_occ(self):

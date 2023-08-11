@@ -2,14 +2,15 @@
 import ujson as json
 import logging
 import os,sys
+import share_var
 
 logging.basicConfig(level=logging.DEBUG)
 
 class plugins():
-    def __init__(self, path):
+    def __init__(self):
         self.plugins = {}  #插件
-        self.plugins_path = path.plugin_path # 插件文件夹路径
-        self.core_path = os.path.join(path.root_path, 'core')
+        self.plugins_path = share_var.plugin_path # 插件文件夹路径
+        self.core_path = os.path.join(share_var.root_path, 'core')
 
         sys.path.append(self.plugins_path)
         sys.path.append(self.core_path)
