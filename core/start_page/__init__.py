@@ -46,7 +46,7 @@ class main():
     def save(self):
         activity_page = self.MainWindow.activity_page()
         if activity_page.path is None:
-            activity_page.path = QFileDialog.getOpenFileUrls(self.MainWindow, _("Save file"), filter = 'step files (*.step);; brep files (*.brep);; iges files (*.iges);; All files (*)')[0]
+            activity_page.path = QFileDialog.getSaveFileName(self.MainWindow, _("Save file"), filter = 'step files (*.step);; brep files (*.brep);; iges files (*.iges);; All files (*)')[0]
         suffix = activity_page.path.split('.')[-1].lower()
 
         if suffix == 'brep':
@@ -57,6 +57,8 @@ class main():
             write_iges_file(activity_page.display.shapes, activity_page.path)
         else:
             logging.error(f"Not supported {suffix}.Stop saving.")
+            activity_page.path = None
         
+        print(activity_page.display.shapes)
         
 
