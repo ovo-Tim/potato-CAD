@@ -6,10 +6,8 @@ import sys
 from pathlib import Path
 
 from OCC.Core.BRepPrimAPI import BRepPrimAPI_MakeBox
-from OCC.Core.BRepBuilderAPI import BRepBuilderAPI_Transform
-from OCC.Core.gp import gp_Ax2, gp_Pnt, gp_Trsf, gp_Vec
-from OCC.Core.TopLoc import TopLoc_Location
-from OCC.Core.TopoDS import TopoDS_Shape
+from OCC.Core.TopExp import TopExp_Explorer
+from OCC.Core.TopAbs import TopAbs_EDGE
 
 import pyqtribbon
 
@@ -32,5 +30,4 @@ class main():
         interactive = self.MainWindow.activity_page().display.DisplayShape(shape)[0]
         print(interactive)
         self.MainWindow.activity_page().move_to_mouse(interactive)
-
 
