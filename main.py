@@ -19,16 +19,10 @@ from PySide6.QtWidgets import QApplication
 import gettext
 from locale import getlocale
 
-from OCC.Display.backend import load_backend,get_loaded_backend
-load_backend("qt-pyside6")
-
 import share_var
 
 import plugin
 from window import MainWindow
-
-# import faulthandler
-# faulthandler.enable()
 
 SAFE_MOD = False
 

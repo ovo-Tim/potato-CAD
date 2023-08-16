@@ -63,8 +63,6 @@ class occ_page(qtDisplay.potaoViewer):
 
         self.InitDriver()
 
-    def export(self):        
-        return self.display.shapes
     
 
     
