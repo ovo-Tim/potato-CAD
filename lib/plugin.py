@@ -3,6 +3,7 @@ import ujson as json
 import logging
 import os,sys
 import share_var
+import importlib
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -20,7 +21,11 @@ class plugins():
             if not plugin_path.startswith("_"):
                 # 获取插件信息
                 logging.info("load plugin:{0}".format(plugin_path))
-                self.plugins[plugin_path] = __import__(plugin_path).main(*args, **kwargs)
+                try:
+                    self.plugins[plugin_path] = importlib.import_module(plugin_path).main(*args, **kwargs)
+                    # print(1)
+                except Exception as e:
+                    logging.error("load plugin:{0} error:{1}".format(plugin_path, e))
 
     def load(self, *args, **kwargs):
         with open(os.path.join(self.plugins_path,"plugins.json"),'r') as plugin_information_f:
@@ -32,8 +37,11 @@ class plugins():
             plugin_path = os.path.join(self.plugins_path, plugin_information['path'])
             logging.debug("Path:{0} config:{1}".format(plugin_path,plugin_information))
 
-            self.plugins[plugin_name] = __import__(plugin_information['path']).main(*args, **kwargs)
-
+            try:
+                self.plugins[plugin_name] = importlib.import_module(plugin_information['path'])
+                self.plugins[plugin_name] = self.plugins[plugin_name].main(*args, **kwargs)
+            except Exception as e:
+                logging.error("Import plugin error:{}".format(e))
 
     def __getitem__(self, key):
         return self.plugins[key]

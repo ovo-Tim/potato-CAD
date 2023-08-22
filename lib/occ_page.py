@@ -8,14 +8,14 @@ from OCC.Core.BRep import BRep_Builder
 from OCC.Core.TopAbs import TopAbs_VERTEX
 
 import logging
-import share_var
-
-from PySide6.QtWidgets import QApplication
 from PySide6.QtCore import Signal
-from PySide6.QtGui import QMouseEvent
+# from dayu_widgets_overlay2 import MOverlay
+import share_var
+import qfluentwidgets
 
+from PySide6.QtWidgets import QApplication, QWidget, QFormLayout
+from PySide6.QtCore import Qt
 
-        
 class occ_page(qtDisplay.potaoViewer):
     '''
         一个包含OCC_canvas的页面。通常情况下，一个打开的3D文件(一个3D文件页面)就是一个occ_page
@@ -63,7 +63,43 @@ class occ_page(qtDisplay.potaoViewer):
 
         self.InitDriver()
 
-    
+class input_dialog(QWidget):
+    paintSingle = Signal()
+    def __init__(self, parent:occ_page):
+        super().__init__(parent)
+        self._parent = parent
+        self.main_layout = QFormLayout(self)
+        self.setLayout(self.main_layout)
+        self.main_layout.addWidget(qfluentwidgets.LineEdit(self))
 
-    
-    
+        self.setAutoFillBackground(True)
+        # self.setStyleSheet("border-radius: 10px")
+        # self.setStyleSheet("background-color:rgb(255, 255, 255)")
+        
+        self.auto_resize()
+        # self.paintSingle.connect(self.auto_resize)
+        self._parent.resize_signal.connect(self.auto_resize)
+        self.show()
+
+    def auto_resize(self):
+        self.adjustSize()
+        self.my_pos = (int(self._parent.width()/2 - self.width()/2), self._parent.height() - self.height())
+        self.move(*self.my_pos)
+
+    def paintEvent(self, event) -> None:
+        self.paintSingle.emit()
+        return super().paintEvent(event)
+
+
+# class input_dialog(QWidget):
+#     paintSingle = Signal()
+#     def __init__(self, parent:occ_page):
+#         super().__init__(parent)
+#         self._parent = parent
+#         self.main_layout = QFormLayout(self)
+#         self.setLayout(self.main_layout)
+#         self.main_layout.addWidget(qfluentwidgets.LineEdit(self))
+
+#         self.setAutoFillBackground(True)
+
+#         parent.main_layout.addWidget(self)

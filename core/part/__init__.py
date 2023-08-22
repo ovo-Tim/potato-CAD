@@ -1,3 +1,4 @@
+
 from PySide6.QtGui import QIcon
 from PySide6.QtCore import SignalInstance
 import webbrowser
@@ -11,8 +12,11 @@ from OCC.Core.TopAbs import TopAbs_EDGE
 
 import pyqtribbon
 
+sys.path.append("../../")
 sys.path.append("../../lib")
+import occ_page
 import share_var
+
 
 class main():
     def __init__(self):
@@ -26,8 +30,8 @@ class main():
                                           slot=self.make_box)
         
     def make_box(self):
+        activity_page = self.MainWindow.activity_page()
         shape = BRepPrimAPI_MakeBox(15,15,15).Shape()
-        interactive = self.MainWindow.activity_page().display.DisplayShape(shape)[0]
-        print(interactive)
-        self.MainWindow.activity_page().move_to_mouse(interactive)
+        interactive = activity_page.display.DisplayShape(shape)[0]
+        activity_page.move_to_mouse(interactive)
 

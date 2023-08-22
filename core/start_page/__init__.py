@@ -59,6 +59,4 @@ class main():
             logging.error(f"Not supported {suffix}.Stop saving.")
             activity_page.path = None
         
-        print(activity_page.display.shapes)
-        
 
