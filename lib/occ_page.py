@@ -13,8 +13,9 @@ from PySide6.QtCore import Signal
 import share_var
 import qfluentwidgets
 
-from PySide6.QtWidgets import QApplication, QWidget, QFormLayout
+from PySide6.QtWidgets import QApplication, QWidget, QHBoxLayout
 from PySide6.QtCore import Qt
+from threading import Thread
 
 class occ_page(qtDisplay.potaoViewer):
     '''
@@ -26,7 +27,6 @@ class occ_page(qtDisplay.potaoViewer):
         # 基本属性
         self.name: str = None
         self.path: str = None
-
 
     def load_file(self, path: str):
         logging.info("Load file:" + path)
@@ -63,31 +63,39 @@ class occ_page(qtDisplay.potaoViewer):
 
         self.InitDriver()
 
+    def paintEvent(self, event):
+        Thread(target=super().paintEvent, args=(event,)).start()
+        # return super().paintEvent(event)
+
 class input_dialog(QWidget):
     paintSingle = Signal()
     def __init__(self, parent:occ_page):
         super().__init__(parent)
         self._parent = parent
-        self.main_layout = QFormLayout(self)
-        self.setLayout(self.main_layout)
-        self.main_layout.addWidget(qfluentwidgets.LineEdit(self))
 
         self.setAutoFillBackground(True)
+        # self.setAttribute(Qt.WA_TranslucentBackground)
+
+        self.main_layout = QHBoxLayout(self)
+        self.setLayout(self.main_layout)
+
         # self.setStyleSheet("border-radius: 10px")
-        # self.setStyleSheet("background-color:rgb(255, 255, 255)")
+        self.setStyleSheet("background-color:rgb(255, 255, 255, 0.5)")
         
         self.auto_resize()
-        # self.paintSingle.connect(self.auto_resize)
-        self._parent.resize_signal.connect(self.auto_resize)
+        self.paintSingle.connect(self.auto_resize)
+        # self._parent.resize_signal.connect(self.auto_resize)
         self.show()
 
     def auto_resize(self):
         self.adjustSize()
         self.my_pos = (int(self._parent.width()/2 - self.width()/2), self._parent.height() - self.height())
         self.move(*self.my_pos)
+        # self.repaint()
 
     def paintEvent(self, event) -> None:
         self.paintSingle.emit()
+        
         return super().paintEvent(event)
 
 

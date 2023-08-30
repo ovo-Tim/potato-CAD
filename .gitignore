@@ -130,3 +130,5 @@ __resources__
 .vscode/
 potato-CAD.code-workspace
 .ruff_cache
+.prof
+.dot

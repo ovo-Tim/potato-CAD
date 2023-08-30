@@ -1,6 +1,7 @@
 
 from PySide6.QtGui import QIcon
 from PySide6.QtCore import SignalInstance
+from PySide6.QtWidgets import QLabel
 import webbrowser
 import os
 import sys
@@ -9,8 +10,10 @@ from pathlib import Path
 from OCC.Core.BRepPrimAPI import BRepPrimAPI_MakeBox
 from OCC.Core.TopExp import TopExp_Explorer
 from OCC.Core.TopAbs import TopAbs_EDGE
-
+from OCC.Core.AIS import AIS_Shape
+import qfluentwidgets
 import pyqtribbon
+from OCC.potato.shape import potato_box
 
 sys.path.append("../../")
 sys.path.append("../../lib")
@@ -31,7 +34,26 @@ class main():
         
     def make_box(self):
         activity_page = self.MainWindow.activity_page()
-        shape = BRepPrimAPI_MakeBox(15,15,15).Shape()
-        interactive = activity_page.display.DisplayShape(shape)[0]
-        activity_page.move_to_mouse(interactive)
+        box = potato_box()
+        # shape = box.Shape()
+        activity_page.display.DisplayShape(box.AIS_Shape())
+        activity_page.move_to_mouse(box)
 
+        input_dialog = occ_page.input_dialog(activity_page)
+        input_dialog.main_layout.addWidget(QLabel(_("Length:")))
+        lenth_input = qfluentwidgets.LineEdit()
+        input_dialog.main_layout.addWidget(lenth_input)
+
+        input_dialog.main_layout.addWidget(QLabel(_("Width:")))
+        width_input = qfluentwidgets.LineEdit()
+        input_dialog.main_layout.addWidget(width_input)
+
+        input_dialog.main_layout.addWidget(QLabel(_("Height:")))
+        height_input = qfluentwidgets.LineEdit()
+        input_dialog.main_layout.addWidget(height_input)
+
+        
+        
+
+
+        # activity_page.main_layout.addWidget(qfluentwidgets.LineEdit())
