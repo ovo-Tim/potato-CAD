@@ -59,9 +59,8 @@ class occ_page(qtDisplay.potaoViewer):
                 QApplication.processEvents()
                 self.display.DisplayShape(solid, update=True)
         
-        self.display.FitAll()
+        # self.display.FitAll()
 
-        self.InitDriver()
 
     def paintEvent(self, event):
         Thread(target=super().paintEvent, args=(event,)).start()
