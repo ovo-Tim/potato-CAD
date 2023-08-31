@@ -14,13 +14,15 @@ import share_var
 import qfluentwidgets
 
 from PySide6.QtWidgets import QApplication, QWidget, QHBoxLayout
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Signal
 from threading import Thread
+from multiprocessing import Process, Pipe, Queue
 
 class occ_page(qtDisplay.potaoViewer):
     '''
         一个包含OCC_canvas的页面。通常情况下，一个打开的3D文件(一个3D文件页面)就是一个occ_page
     '''
+    load_finish_singal = Signal()
     def __init__(self):
         super().__init__()
 
@@ -28,39 +30,53 @@ class occ_page(qtDisplay.potaoViewer):
         self.name: str = None
         self.path: str = None
 
-    def load_file(self, path: str):
+        # self.conn1, self.conn2 = Pipe()
+        self.queue = Queue()
+
+        self.load_finish_singal.connect(lambda: self.display.DisplayShape(self.queue.get(), update=True))
+        # self.load_finish_singal.connect(lambda:print(self.queue.get().HashCode(1)))
+
+    # def _load_shapes(self, shapes):
+    #     step = TopologyExplorer(shapes)
+    #     for solid in step.solids():
+    #         QApplication.processEvents()
+    #         self.display.DisplayShape(solid, update=True)
+
+    def _load_file(self, path: str ,pipe):
         logging.info("Load file:" + path)
         suffix = path.split('.')[-1].lower()
 
-        QApplication.processEvents()
-
         if suffix == 'brep':
             logging.info("Found BREP,loading")
-            read_mod = TopoDS_Shape()
+            mod_file = TopoDS_Shape()
             builder = BRep_Builder()
-            breptools_Read(read_mod, path, builder)
-            self.display.DisplayShape(read_mod, update=True)
-        else:
-            if suffix == 'step':
-                logging.info("Found STEP, loading")
-                mod_file = read_step_file(path)
-            elif suffix == 'iges':
-                logging.info("Found IGES, loading")
-                mod_file = read_iges_file(path)
-            elif suffix == 'stl':
-                logging.info("Found STL, loading")
-                mod_file = read_stl_file(path)
-            else:
-                logging.error(f"Not supported {suffix}.Stop loading.")
-                return
+            breptools_Read(mod_file, path, builder)
+            # self.display.DisplayShape(read_mod, update=True)
 
-            step = TopologyExplorer(mod_file)
-            for solid in step.solids():
-                QApplication.processEvents()
-                self.display.DisplayShape(solid, update=True)
+        elif suffix == 'step':
+            logging.info("Found STEP, loading")
+            mod_file = read_step_file(path, as_compound=False)
+        elif suffix == 'iges':
+            logging.info("Found IGES, loading")
+            mod_file = read_iges_file(path)
+        elif suffix == 'stl':
+            logging.info("Found STL, loading")
+            mod_file = read_stl_file(path)
+        else:
+            logging.error(f"Not supported {suffix}.Stop loading.")
+            return
         
+        logging.info("Load finish")
+        # print("Hash code:", mod_file.HashCode(1))
+        pipe.put(mod_file)
+        self.load_finish_singal.emit()
+
         # self.display.FitAll()
 
+    def load_file(self, path:str):
+        self._load_file(path, self.queue)
+        # p = Process(target=self._load_file, args=(path, self.queue)) # TODO: 多进程加载
+        # p.start()
 
     def paintEvent(self, event):
         Thread(target=super().paintEvent, args=(event,)).start()

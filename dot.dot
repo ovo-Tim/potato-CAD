@@ -1,0 +1,63 @@
+digraph {
+	graph [fontname=Arial, nodesep=0.125, ranksep=0.25];
+	node [fontcolor=white, fontname=Arial, height=0, shape=box, style=filled, width=0];
+	edge [fontname=Arial];
+	7 [color="#0d1375", fontcolor="#ffffff", fontsize="10.00", label="qtDisplay:304:mouseMoveEvent\n1.44%\n(0.10%)\n234×", tooltip="/home/tim/mambaforge/envs/potatoCAD/lib/python3.10/site-packages/OCC/Display/qtDisplay.py"];
+	7 -> 312 [arrowsize="0.35", color="#0d1074", fontcolor="#0d1074", fontsize="10.00", label="0.70%\n234×", labeldistance="0.50", penwidth="0.50"];
+	32 [color="#0d1274", fontcolor="#ffffff", fontsize="10.00", label="qtDisplay:748:_move_to_mouse\n1.17%\n(0.00%)\n57×", tooltip="/home/tim/mambaforge/envs/potatoCAD/lib/python3.10/site-packages/OCC/Display/qtDisplay.py"];
+	32 -> 405 [arrowsize="0.35", color="#0d1174", fontcolor="#0d1174", fontsize="10.00", label="1.11%\n57×", labeldistance="0.50", penwidth="0.50"];
+	102 [color="#0d347e", fontcolor="#ffffff", fontsize="10.00", label="~:0:<method 'acquire' of '_thread.lock' objects>\n8.74%\n(8.74%)\n492×", tooltip="~"];
+	105 [color="#0d347e", fontcolor="#ffffff", fontsize="10.00", label="threading:288:wait\n8.76%\n(0.02%)\n123×", tooltip="/home/tim/mambaforge/envs/potatoCAD/lib/python3.10/threading.py"];
+	105 -> 102 [arrowsize="0.35", color="#0d347e", fontcolor="#0d347e", fontsize="10.00", label="8.74%\n246×", labeldistance="0.50", penwidth="0.50"];
+	121 [color="#0d357e", fontcolor="#ffffff", fontsize="10.00", label="threading:916:start\n8.83%\n(0.01%)\n123×", tooltip="/home/tim/mambaforge/envs/potatoCAD/lib/python3.10/threading.py"];
+	121 -> 676 [arrowsize="0.35", color="#0d347e", fontcolor="#0d347e", fontsize="10.00", label="8.78%\n123×", labeldistance="0.50", penwidth="0.50"];
+	209 [color="#0d0f73", fontcolor="#ffffff", fontsize="10.00", label="window:153:new_page\n0.52%\n(0.01%)\n1×", tooltip="/home/tim/代码田/小程序/python/有用的/potato-CAD/./lib/window.py"];
+	250 [color="#fe0a00", fontcolor="#ffffff", fontsize="10.00", label="~:0:<built-in method exec>\n99.08%\n(86.34%)\n1×", tooltip="~"];
+	250 -> 432 [arrowsize="0.35", color="#0d357e", fontcolor="#0d357e", fontsize="10.00", label="8.89%\n123×", labeldistance="0.50", penwidth="0.50"];
+	250 -> 439 [arrowsize="0.35", color="#0d1876", fontcolor="#0d1876", fontsize="10.00", label="2.65%\n234×", labeldistance="0.50", penwidth="0.50"];
+	254 [color="#0d1074", fontcolor="#ffffff", fontsize="10.00", label="main:63:__init__\n0.88%\n(0.08%)\n1×", tooltip="./main.py"];
+	254 -> 475 [arrowsize="0.35", color="#0d0f74", fontcolor="#0d0f74", fontsize="10.00", label="0.62%\n1×", labeldistance="0.50", penwidth="0.50"];
+	312 [color="#0d1074", fontcolor="#ffffff", fontsize="10.00", label="OCCViewer:198:MoveTo\n0.70%\n(0.01%)\n234×", tooltip="/home/tim/mambaforge/envs/potatoCAD/lib/python3.10/site-packages/OCC/Display/OCCViewer.py"];
+	312 -> 403 [arrowsize="0.35", color="#0d1074", fontcolor="#0d1074", fontsize="10.00", label="0.69%\n234×", labeldistance="0.50", penwidth="0.50"];
+	402 [color="#0d1074", fontcolor="#ffffff", fontsize="10.00", label="~:0:<built-in method OCC.Core._AIS.AIS_InteractiveContext_MoveTo>\n0.69%\n(0.69%)\n234×", tooltip="~"];
+	403 [color="#0d1074", fontcolor="#ffffff", fontsize="10.00", label="AIS:4226:MoveTo\n0.69%\n(0.01%)\n234×", tooltip="/home/tim/mambaforge/envs/potatoCAD/lib/python3.10/site-packages/OCC/Core/AIS.py"];
+	403 -> 402 [arrowsize="0.35", color="#0d1074", fontcolor="#0d1074", fontsize="10.00", label="0.69%\n234×", labeldistance="0.50", penwidth="0.50"];
+	404 [color="#0d1174", fontcolor="#ffffff", fontsize="10.00", label="~:0:<built-in method OCC.Core._AIS.AIS_InteractiveContext_Redisplay>\n1.11%\n(1.11%)\n57×", tooltip="~"];
+	405 [color="#0d1174", fontcolor="#ffffff", fontsize="10.00", label="AIS:4485:Redisplay\n1.11%\n(0.00%)\n57×", tooltip="/home/tim/mambaforge/envs/potatoCAD/lib/python3.10/site-packages/OCC/Core/AIS.py"];
+	405 -> 404 [arrowsize="0.35", color="#0d1174", fontcolor="#0d1174", fontsize="10.00", label="1.11%\n57×", labeldistance="0.50", penwidth="0.50"];
+	432 [color="#0d357e", fontcolor="#ffffff", fontsize="10.00", label="occ_page:76:paintEvent\n8.89%\n(0.01%)\n123×", tooltip="/home/tim/代码田/小程序/python/有用的/potato-CAD/./lib/occ_page.py"];
+	432 -> 121 [arrowsize="0.35", color="#0d357e", fontcolor="#0d357e", fontsize="10.00", label="8.83%\n123×", labeldistance="0.50", penwidth="0.50"];
+	435 [color="#0d1274", fontcolor="#ffffff", fontsize="10.00", label="~:0:<method 'emit' of 'PySide6.QtCore.SignalInstance' objects>\n1.37%\n(0.10%)\n425×", tooltip="~"];
+	435 -> 440 [arrowsize="0.35", color="#0d1274", fontcolor="#0d1274", fontsize="10.00", label="1.17%\n57×", labeldistance="0.50", penwidth="0.50"];
+	439 [color="#0d1876", fontcolor="#ffffff", fontsize="10.00", label="qtDisplay:724:mouseMoveEvent\n2.65%\n(0.02%)\n234×", tooltip="/home/tim/mambaforge/envs/potatoCAD/lib/python3.10/site-packages/OCC/Display/qtDisplay.py"];
+	439 -> 7 [arrowsize="0.35", color="#0d1375", fontcolor="#0d1375", fontsize="10.00", label="1.44%\n234×", labeldistance="0.50", penwidth="0.50"];
+	439 -> 435 [arrowsize="0.35", color="#0d1274", fontcolor="#0d1274", fontsize="10.00", label="1.20%\n234×", labeldistance="0.50", penwidth="0.50"];
+	440 [color="#0d1274", fontcolor="#ffffff", fontsize="10.00", label="qtDisplay:745:<lambda>\n1.17%\n(0.00%)\n57×", tooltip="/home/tim/mambaforge/envs/potatoCAD/lib/python3.10/site-packages/OCC/Display/qtDisplay.py"];
+	440 -> 32 [arrowsize="0.35", color="#0d1274", fontcolor="#0d1274", fontsize="10.00", label="1.17%\n57×", labeldistance="0.50", penwidth="0.50"];
+	473 [color="#0d0f74", fontcolor="#ffffff", fontsize="10.00", label="window:82:initUI\n0.62%\n(0.01%)\n1×", tooltip="/home/tim/代码田/小程序/python/有用的/potato-CAD/./lib/window.py"];
+	473 -> 209 [arrowsize="0.35", color="#0d0f73", fontcolor="#0d0f73", fontsize="10.00", label="0.52%\n1×", labeldistance="0.50", penwidth="0.50"];
+	475 [color="#0d0f74", fontcolor="#ffffff", fontsize="10.00", label="window:69:__init__\n0.62%\n(0.00%)\n1×", tooltip="/home/tim/代码田/小程序/python/有用的/potato-CAD/./lib/window.py"];
+	475 -> 473 [arrowsize="0.35", color="#0d0f74", fontcolor="#0d0f74", fontsize="10.00", label="0.62%\n1×", labeldistance="0.50", penwidth="0.50"];
+	676 [color="#0d347e", fontcolor="#ffffff", fontsize="10.00", label="threading:589:wait\n8.78%\n(0.01%)\n123×", tooltip="/home/tim/mambaforge/envs/potatoCAD/lib/python3.10/threading.py"];
+	676 -> 105 [arrowsize="0.35", color="#0d347e", fontcolor="#0d347e", fontsize="10.00", label="8.76%\n123×", labeldistance="0.50", penwidth="0.50"];
+}
+/home/tim/mambaforge/envs/potatoCAD/share/locale/zh_CN.UTF-8/LC_MESSAGES/messages.mo
+/home/tim/mambaforge/envs/potatoCAD/share/locale/zh_CN/LC_MESSAGES/messages.mo
+/home/tim/mambaforge/envs/potatoCAD/share/locale/zh.UTF-8/LC_MESSAGES/messages.mo
+/home/tim/mambaforge/envs/potatoCAD/share/locale/zh/LC_MESSAGES/messages.mo
+/home/tim/mambaforge/envs/potatoCAD/share/locale/zh_CN.UTF-8/LC_MESSAGES/messages.mo
+/home/tim/mambaforge/envs/potatoCAD/share/locale/zh_CN/LC_MESSAGES/messages.mo
+/home/tim/mambaforge/envs/potatoCAD/share/locale/zh.UTF-8/LC_MESSAGES/messages.mo
+/home/tim/mambaforge/envs/potatoCAD/share/locale/zh/LC_MESSAGES/messages.mo
+/home/tim/mambaforge/envs/potatoCAD/share/locale/zh_CN.UTF-8/LC_MESSAGES/messages.mo
+/home/tim/mambaforge/envs/potatoCAD/share/locale/zh_CN/LC_MESSAGES/messages.mo
+/home/tim/mambaforge/envs/potatoCAD/share/locale/zh.UTF-8/LC_MESSAGES/messages.mo
+/home/tim/mambaforge/envs/potatoCAD/share/locale/zh/LC_MESSAGES/messages.mo
+/home/tim/mambaforge/envs/potatoCAD/share/locale/zh_CN.UTF-8/LC_MESSAGES/messages.mo
+/home/tim/mambaforge/envs/potatoCAD/share/locale/zh_CN/LC_MESSAGES/messages.mo
+/home/tim/mambaforge/envs/potatoCAD/share/locale/zh.UTF-8/LC_MESSAGES/messages.mo
+/home/tim/mambaforge/envs/potatoCAD/share/locale/zh/LC_MESSAGES/messages.mo
+/home/tim/mambaforge/envs/potatoCAD/share/locale/zh_CN.UTF-8/LC_MESSAGES/messages.mo
+/home/tim/mambaforge/envs/potatoCAD/share/locale/zh_CN/LC_MESSAGES/messages.mo
+/home/tim/mambaforge/envs/potatoCAD/share/locale/zh.UTF-8/LC_MESSAGES/messages.mo
+/home/tim/mambaforge/envs/potatoCAD/share/locale/zh/LC_MESSAGES/messages.mo

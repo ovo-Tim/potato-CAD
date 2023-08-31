@@ -166,7 +166,7 @@ class MainWindow(QMainWindow):
         self.main_page_window.addTab(
             self.page_list[page.name], QIcon(share_var.root_path + '/icon.svg'), page.name)
         
-        page.InitDriver()
+        # page.InitDriver()
 
         if file != None:
             page.load_file(file)
