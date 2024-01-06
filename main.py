@@ -56,7 +56,7 @@ if os.path.exists(os.path.join(lang_localedir, lang)): # 检查语言是否存�
     translation.install()
 else:
     gettext.install(None)
-    logging.info(f"Can't find:{lang}.Use english")
+    logging.info(f"Can't find:{lang}. Use english")
 
 
 class Main():
@@ -76,8 +76,8 @@ class Main():
 
 if __name__ == '__main__':
 
-    Profile = cProfile.Profile()
-    Profile.enable()
+    # Profile = cProfile.Profile()
+    # Profile.enable()
 
     win = Main()
 
@@ -91,8 +91,8 @@ if __name__ == '__main__':
     win.main_window.show()
     win.app.exec()
 
-    Profile.disable()
-    # Profile.dump_stats('profile.prof')
-    import pstats
-    pstats.Stats(Profile).dump_stats('profile.prof')
+    # Profile.disable()
+    # # Profile.dump_stats('profile.prof')
+    # import pstats
+    # pstats.Stats(Profile).dump_stats('profile.prof')
 
