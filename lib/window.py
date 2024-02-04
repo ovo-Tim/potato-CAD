@@ -166,7 +166,7 @@ class MainWindow(QMainWindow):
         self.main_page_window.addTab(
             self.page_list[page.name], QIcon(share_var.root_path + '/icon.svg'), page.name)
         
-        page.InitDriver()
+        # page.InitDriver()
 
         if file != None:
             page.load_file(file)
@@ -177,8 +177,9 @@ class MainWindow(QMainWindow):
 
     def refresh_occ(self):
         logging.debug("refresh viewer")
-        # self.activity_page().display.SetSize(self.activity_page().width(), self.activity_page().height())
-        self.activity_page().InitDriver()
+        # # self.activity_page().display.SetSize(self.activity_page().width(), self.activity_page().height())
+        # self.activity_page()._display.View.MustBeResized()
+        # self.activity_page()._display.Repaint()
         
     def activity_page(self) -> occ_page:
         self._activity_page = self.page_list[self.main_page_window.tabText(self.main_page_window.currentIndex())]
