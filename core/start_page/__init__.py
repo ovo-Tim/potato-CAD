@@ -22,13 +22,13 @@ class main():
 
         self.file_panel = self.category1.addPanel(_("File"))
         self.file_panel.addMediumButton(
-            _("Open file"), icon=QIcon(share_var.root_path+ '/icons/open_file.svg'), slot=self.open_InBackground)
+            _("Import file"), icon=QIcon(share_var.root_path+ '/icons/import.svg'), slot=self.import_InBackground)
         
         self.file_panel.addMediumButton(
-            _("New page"), icon=QIcon(share_var.root_path+ '/icons/open_file.svg'), slot= lambda: self.MainWindow.new_page(None))
+            _("New page"), icon=QIcon(share_var.root_path+ '/icons/new_page.svg'), slot= lambda: self.MainWindow.new_page(None))
         
         self.file_panel.addMediumButton(
-            _("Export"), icon=QIcon(share_var.root_path+ '/icons/save.svg'), slot=self.export
+            _("Export"), icon=QIcon(share_var.root_path+ '/icons/export.svg'), slot=self.export
         )
 
         self.file_panel.addMediumButton(
@@ -40,14 +40,14 @@ class main():
         self.About_panel.addSmallButton(_("Home page"), icon=QIcon(
             share_var.root_path+ "/icon.svg"), slot=lambda: webbrowser.open_new_tab("https://github.com/ovo-Tim/potato-CAD"))
         
-    def open_file(self):
+    def import_file(self):
         self.MainWindow._isResizeEnabled = False
         file_paths = QFileDialog.getOpenFileNames(self.MainWindow, _("select file"), filter = 'step files (*.step);; brep files (*.brep);; iges files (*.iges);; stl files (*.stl);; All files (*)')[0]
         self.MainWindow._isResizeEnabled = True
         for i in file_paths:
             self.MainWindow.activity_page().import_file(i)
     
-    def open_InBackground(self):
+    def import_InBackground(self):
         self.MainWindow._isResizeEnabled = False
         file_paths = QFileDialog.getOpenFileNames(self.MainWindow, _("select file"), filter = 'step files (*.step);; brep files (*.brep);; iges files (*.iges);; stl files (*.stl);; All files (*)')[0]
         self.MainWindow._isResizeEnabled = True
