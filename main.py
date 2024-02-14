@@ -23,6 +23,7 @@ import share_var
 
 import plugin
 from window import MainWindow
+from lib.multithread_manager import thread_manager
 
 import cProfile
 
@@ -64,6 +65,8 @@ class Main():
         # 创建 MainWindow
         self.app = QApplication(sys.argv)
         share_var.main_class = self
+        self.threads = thread_manager()
+        share_var.threads = self.threads
         self.main_window = MainWindow()
         share_var.main_window = self.main_window
 

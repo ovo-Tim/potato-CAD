@@ -1,20 +1,10 @@
 from typing import Optional
-import OCC.Display.qtDisplay as qtDisplay
-from OCC.Core.AIS import AIS_ViewCube, AIS_Shape
-from OCC.Extend.DataExchange import read_step_file, read_iges_file, read_stl_file #STEP文件导入模块
-from OCC.Extend.TopologyUtils import TopologyExplorer #STEP文件导入模块后的拓扑几何分析模块
-from OCC.Core.BRepTools import breptools_Read
-from OCC.Core.TopoDS import TopoDS_Shape, TopoDS_Vertex
-from OCC.Core.BRep import BRep_Builder
-from OCC.Core.TopAbs import TopAbs_VERTEX
-from OCC.Core.TopLoc import TopLoc_Location
-from OCC.Core.TopExp import TopExp_Explorer
-from OCC.Core.BRep import BRep_Tool
-from OCC.Core.TopoDS import TopoDS_Edge, TopoDS_Shape
-from OCC.Core.V3d import V3d_Xpos, V3d_Ypos, V3d_Zpos, V3d_Xneg, V3d_Yneg, V3d_Zneg
-from OCC.Core.Graphic3d import Graphic3d_TransformPers, Graphic3d_TMF_TriedronPers, Graphic3d_Vec2i
-from OCC.Core.gp import gp_Trsf, gp_Vec
-from OCC.Core.TopAbs import (
+import OCCT.Display.qtDisplay as qtDisplay
+from OCCT.AIS import AIS_ViewCube, AIS_Shape
+from OCCT.V3d import V3d_Xpos, V3d_Ypos, V3d_Zpos, V3d_Xneg, V3d_Yneg, V3d_Zneg
+from OCCT.Graphic3d import Graphic3d_TransformPers, Graphic3d_TMF_TriedronPers, Graphic3d_Vec2i
+from OCCT.gp import gp_Trsf, gp_Vec
+from OCCT.TopAbs import (
     TopAbs_FACE,
     TopAbs_EDGE,
     TopAbs_VERTEX,
@@ -27,20 +17,26 @@ from PySide6.QtCore import Signal
 # from dayu_widgets_overlay2 import MOverlay
 import share_var
 import qfluentwidgets
-from OCC.Core.Aspect import Aspect_GT_Rectangular, Aspect_GDM_Lines, Aspect_TOTP_RIGHT_UPPER
-
-from PySide6.QtWidgets import QApplication, QWidget, QHBoxLayout
+from OCCT.Aspect import Aspect_GT_Rectangular, Aspect_GDM_Lines, Aspect_TOTP_RIGHT_UPPER
 from PySide6.QtCore import Qt, Signal
+from shape_data import main_datas
+from actions import file_io
+from OCCT.TCollection import TCollection_AsciiString
+
+from lib.multithread_manager import new_mq_thread
+
+def occt_text(text: str):
+    return TCollection_AsciiString(text)
 
 class potato_ViewCube(AIS_ViewCube):
     def __init__(self):
         super().__init__()
-        self.SetBoxSideLabel(V3d_Xpos, _("Right"))
-        self.SetBoxSideLabel(V3d_Ypos, _("Back"))
-        self.SetBoxSideLabel(V3d_Zpos, _("Top"))
-        self.SetBoxSideLabel(V3d_Xneg, _("Left"))
-        self.SetBoxSideLabel(V3d_Yneg, _("Front"))
-        self.SetBoxSideLabel(V3d_Zneg, _("Bottom"))
+        self.SetBoxSideLabel(V3d_Xpos, occt_text(_("Right")))
+        self.SetBoxSideLabel(V3d_Ypos, occt_text(_("Back")))
+        self.SetBoxSideLabel(V3d_Zpos, occt_text(_("Top")))
+        self.SetBoxSideLabel(V3d_Xneg, occt_text(_("Left")))
+        self.SetBoxSideLabel(V3d_Yneg, occt_text(_("Front")))
+        self.SetBoxSideLabel(V3d_Zneg, occt_text(_("Bottom")))
         self.SetFontHeight( self.Size() * 0.38)
         self.SetTransparency(0.6)
 
@@ -53,7 +49,7 @@ class potato_ViewCube(AIS_ViewCube):
                 Graphic3d_Vec2i(100, 100)
             )
         )
-    def SetSize(self, theValue: float, theToAdaptAnother: bool = True) -> None:
+    def SetSize(self, theValue: int, theToAdaptAnother: bool = True) -> None:
         self.SetTransformPersistence(
             Graphic3d_TransformPers(
                 Graphic3d_TMF_TriedronPers,
@@ -120,6 +116,28 @@ class potaoViewer(qtDisplay.qtViewer3d):
             
             self.display.Context.Redisplay(shape, True)
 
+class multithread_viewer(potaoViewer):
+    def __init__(self, *kargs):
+        super().__init__(*kargs)
+        self._paintThread:new_mq_thread = share_var.threads.add_thread(name="paintThread")
+        self._paintEvent = self._paintThread.add_func(super().paintEvent)
+        self._mouseMoveEvent = self._paintThread.add_func(super().mouseMoveEvent)
+        self._mouseReleaseEvent = self._paintThread.add_func(super().mouseReleaseEvent)
+
+    def paintEvent(self, event):
+        self._paintEvent.start((event,))
+        # return super().paintEvent(event)
+
+    def mouseMoveEvent(self, event):
+        self._mouseMoveEvent.start((event,))
+        # return super().mouseMoveEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        self._mouseReleaseEvent.start((event,))
+        # return super().mouseReleaseEvent(event)
+
+    
+
 class occ_page(potaoViewer):
     '''
         一个包含OCC_canvas的页面。通常情况下，一个打开的3D文件(一个3D文件页面)就是一个occ_page
@@ -132,57 +150,17 @@ class occ_page(potaoViewer):
         self.name: str = None
         self.path: str = None
 
-    def load_file(self, path: str):
-        logging.info("Load file:" + path)
-        suffix = path.split('.')[-1].lower()
+        self.shape_datas = main_datas(self)
 
-        if suffix == 'brep':
-            logging.info("Found BREP,loading")
-            mod_file = TopoDS_Shape()
-            builder = BRep_Builder()
-            breptools_Read(mod_file, path, builder)
-
-        elif suffix == 'step':
-            logging.info("Found STEP, loading")
-            mod_file = read_step_file(path, as_compound=False)
-        elif suffix == 'iges':
-            logging.info("Found IGES, loading")
-            mod_file = read_iges_file(path)
-        elif suffix == 'stl':
-            logging.info("Found STL, loading")
-            mod_file = read_stl_file(path)
+    def import_file(self, path: str):
+        mod_file = file_io.load(path)
+        if isinstance(mod_file, list):
+            n=0
+            for i in mod_file:
+                self.shape_datas.add_shape(i, path.split('/')[-1].split('.')[0] + str(n:=n+1))
         else:
-            logging.error(f"Not supported {suffix}. Stop loading.")
-            return
-        
-        logging.info("Load finish")
+            self.shape_datas.add_shape(mod_file, path.split('/')[-1].split('.')[0])
+            
         self.load_finish_singal.emit()
-        self._display.DisplayShape(mod_file, update=True)
-
-class input_dialog(QWidget):
-    paintSingle = Signal()
-    def __init__(self, parent:occ_page):
-        super().__init__(parent)
-        self._parent = parent
-
-        self.setAutoFillBackground(True)
-
-        self.main_layout = QHBoxLayout(self)
-        self.setLayout(self.main_layout)
-
-        self.setStyleSheet("border-radius: 10px")
-        self.setStyleSheet("background-color:rgb(255, 255, 255, 0.5)")
         
-        self.auto_resize()
-        self.paintSingle.connect(self.auto_resize)
-        self.show()
 
-    def auto_resize(self):
-        self.adjustSize()
-        self.my_pos = (int(self._parent.width()/2 - self.width()/2), self._parent.height() - self.height())
-        self.move(*self.my_pos)
-
-    def paintEvent(self, event) -> None:
-        self.paintSingle.emit()
-        
-        return super().paintEvent(event)

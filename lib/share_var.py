@@ -2,10 +2,12 @@ import os
 import logging
 import pathlib
 import window
+import multithread_manager
 
 __dir__ = os.path.join(os.path.dirname(__file__), '..')
 
-main_window:window.MainWindow = None
+main_window:window.MainWindow
+threads:multithread_manager.thread_manager
 
 app_path = os.path.join(pathlib.Path.home(), '.potato-CAD')
 logging.info("software path:" + app_path)

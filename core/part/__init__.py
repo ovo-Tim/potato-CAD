@@ -7,13 +7,12 @@ import os
 import sys
 from pathlib import Path
 
-from OCC.Core.BRepPrimAPI import BRepPrimAPI_MakeBox
-from OCC.Core.TopExp import TopExp_Explorer
-from OCC.Core.TopAbs import TopAbs_EDGE
-from OCC.Core.AIS import AIS_Shape
+from OCCT.BRepPrimAPI import BRepPrimAPI_MakeBox
+from OCCT.TopExp import TopExp_Explorer
+from OCCT.TopAbs import TopAbs_EDGE
+from OCCT.AIS import AIS_Shape
 import qfluentwidgets
 import pyqtribbon
-from OCC.potato.shape import potato_box
 
 sys.path.append("../../")
 sys.path.append("../../lib")
@@ -31,6 +30,7 @@ class main():
 
         self.solids_panel.addMediumButton(_("Box"), icon=QIcon(share_var.root_path + '/icons/box.svg')
                                           )
+        
         
     # def make_box(self):
     #     activity_page = self.MainWindow.activity_page()

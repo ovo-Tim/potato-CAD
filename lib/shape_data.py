@@ -1,28 +1,29 @@
 from typing import Any
-from OCC.Core.AIS import AIS_Shape
-from OCC.Core.TopoDS import TopoDS_Shape
-from OCC.Core.BRepBuilderAPI import BRepBuilderAPI_MakeShape
-from ..lib.occ_page import potaoViewer
+from OCCT.AIS import AIS_Shape
+from OCCT.TopoDS import TopoDS_Shape
+from OCCT.BRepBuilderAPI import BRepBuilderAPI_MakeShape
+from OCCT.Display.qtDisplay import qtViewer3d
 import logging
 import ujson as json
+from typing import Union
 
-SUPPORT_TYPE = AIS_Shape|TopoDS_Shape|BRepBuilderAPI_MakeShape
+SUPPORT_TYPE = Union[AIS_Shape, TopoDS_Shape, BRepBuilderAPI_MakeShape]
 
-class shape_item
-class main_datas
+class shape_item(): # Just for type hint
+    pass
 
 class main_datas():
-    def __init__(self, canva) -> None:
+    def __init__(self, canva:qtViewer3d) -> None:
         self.shapes: dict[str, shape_item] = {}
-        self.canva: potaoViewer = canva
+        self.canva = canva
 
-    def add_shape(self, shape: SUPPORT_TYPE|shape_item, name: str, display=True):
+    def add_shape(self, shape: Union[SUPPORT_TYPE, shape_item], name: str):
         if isinstance(shape, shape_item):
             self.shapes[name] = shape
         else:
             self.shapes[name] = shape_item(shape, self)
-        if display:
-            self.canva.display.DisplayShape(self.shapes[name].ais_shape, True)
+
+        self.canva._display.DisplayShape(self.shapes[name].ais_shape, update=True)
 
     def update_display(self, name: str):
         '''
@@ -37,38 +38,41 @@ class main_datas():
             res[key] = value.export_to_json()
         return res
 
+    def export_to_list(self) -> list[TopoDS_Shape]:
+        return [i.shape_data for i in self.shapes.values()]
+
 class shape_item():
     def __init__(self, shape: SUPPORT_TYPE, parent: main_datas = None) -> None:
-        self.shape_data: SUPPORT_TYPE = shape
+
         self.child_shape: dict[str, shape_item] = {}
         self.parent: main_datas = parent
-        
-    def TopoDS_Shape(self) -> TopoDS_Shape:
-        if isinstance(self.shape_data, AIS_Shape):
-            return self.shape_data.Shape()
-        elif isinstance(self.shape_data, TopoDS_Shape):
-            return self.shape_data
-        elif isinstance(self.shape_data, BRepBuilderAPI_MakeShape):
-            return self.shape_data.Shape()
-        
+        self.shape_data: TopoDS_Shape = None
+
+        if isinstance(shape, AIS_Shape):
+            super().__setattr__('shape_data', shape.Shape()) # self.shape_data:TopoDS_Shape = shape.Shape()
+            self.ais_shape: AIS_Shape = shape
+        else:
+            if isinstance(shape, TopoDS_Shape):
+                super().__setattr__('shape_data', shape) # self.shape_data:TopoDS_Shape = shape
+            if isinstance(shape, BRepBuilderAPI_MakeShape):
+                super().__setattr__('shape_data', shape.Shape()) # self.shape_data:TopoDS_Shape = shape.Shape()
+            self.ais_shape: AIS_Shape = AIS_Shape(self.shape_data)
+                
     def update_shape(self):
         '''
             You don't need to run this function, it will be called automatically. (When you set shape_data)
             Run this function when you replace shape_data.
             This function will update ais_shape. And if you set parent, it will also update view(parent.canva.display.Context.Redisplay).
         '''
-        if isinstance(self.shape_data, AIS_Shape):
-            self.ais_shape: AIS_Shape = self.shape_data
-        else:
-            self.ais_shape = AIS_Shape(self.TopoDS_Shape())
+        self.ais_shape.SetShape(self.shape_data)
 
         if self.parent is not None:
-            self.parent.canva.display.Context.Redisplay(self.ais_shape, True)
+            self.parent.canva._display.Context.Redisplay(self.ais_shape, True)
 
     def __setattr__(self, __name: str, __value: Any) -> None:
         super().__setattr__(__name, __value)
-        if __name == 'shape_data':
-            self.update_ais_shape()
+        if __name == 'shape_data' and __value is not None:
+            self.update_shape()
 
     def export_to_json(self) -> dict:
         '''
@@ -78,25 +82,28 @@ class shape_item():
                     'data': {
                         (OCC shape data...)
                     },
-                    'childen': {
+                    'children': {
                         'Child Box': {
                             'data': {
                                 (OCC shape data...)
                             },
-                            'childen': {
+                            'children': {
                                 (child's child shape data...)
                             }
                         },
-                        (Other childen shape data...)
+                        (Other children shape data...)
                     }
                 }
         '''
         res = {}
-        res['data'] = json.loads(self.TopoDS_Shape().DumpJsonToString())
-        res['childen'] = {}
+        res['data'] = self.shape_data
+        res['children'] = {}
         for key, value in self.child_shape.items():
-            res['childen'][key] = value.export_to_json()
+            res['children'][key] = value.export_to_json()
         return res
         
 
-        
+def load_from_json(canva, json_data: dict[str, str]) -> main_datas:
+    res = main_datas(canva)
+    for name, json_shape in json_data.items():
+        res.add_shape(TopoDS_Shape(), name)
