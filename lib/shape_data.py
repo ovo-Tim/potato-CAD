@@ -17,12 +17,12 @@ class main_datas():
         self.shapes: dict[str, shape_item] = {}
         self.canva = canva
 
-    def add_shape(self, shape: Union[SUPPORT_TYPE, shape_item], name: str):
+    def add_shape(self, shape: Union[SUPPORT_TYPE, shape_item], name: str, child_shapes: dict[str, shape_item] = {}):
         if isinstance(shape, shape_item):
             self.shapes[name] = shape
         else:
-            self.shapes[name] = shape_item(shape, self)
-
+            self.shapes[name] = shape_item(shape, self, child_shapes=child_shapes)
+        print(shape)
         self.canva._display.DisplayShape(self.shapes[name].ais_shape, update=True)
 
     def update_display(self, name: str):
@@ -40,11 +40,16 @@ class main_datas():
 
     def export_to_list(self) -> list[TopoDS_Shape]:
         return [i.shape_data for i in self.shapes.values()]
+    
+    def load_from_json(self, json_data: dict):
+        logging.debug(f"Loading:{json_data}")
+        for name, data in json_data.items():
+            self.add_shape(data['data'], name, data['children'])
 
 class shape_item():
-    def __init__(self, shape: SUPPORT_TYPE, parent: main_datas = None) -> None:
+    def __init__(self, shape: SUPPORT_TYPE, parent: main_datas = None, child_shapes: dict[str, shape_item] = {}) -> None:
 
-        self.child_shape: dict[str, shape_item] = {}
+        self.child_shapes: dict[str, shape_item] = child_shapes
         self.parent: main_datas = parent
         self.shape_data: TopoDS_Shape = None
 
@@ -98,7 +103,7 @@ class shape_item():
         res = {}
         res['data'] = self.shape_data
         res['children'] = {}
-        for key, value in self.child_shape.items():
+        for key, value in self.child_shapes.items():
             res['children'][key] = value.export_to_json()
         return res
         

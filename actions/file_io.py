@@ -1,8 +1,8 @@
 from OCCT.Extend.DataExchange import write_step_file, write_iges_file, write_brep_file
 import logging
 
-from OCCT.Extend.DataExchange import read_step_file, read_iges_file, read_stl_file #STEP文件导入模块
-from OCCT.Extend.TopologyUtils import TopologyExplorer #STEP文件导入模块后的拓扑几何分析模块
+from OCCT.Extend.DataExchange import read_step_file, read_iges_file, read_stl_file
+from OCCT.Extend.TopologyUtils import TopologyExplorer 
 from OCCT.BRepTools import BRepTools
 from OCCT.TopoDS import TopoDS_Shape
 from OCCT.BRep import BRep_Builder
@@ -27,7 +27,7 @@ def export(path:str, shapes:list):
     else:
         logging.error(f"Not supported {suffix}.Stop exporting.")
 
-def load(path:str) -> Union[TopoDS_Shape,list[TopoDS_Shape]]:
+def import_shap(path:str) -> Union[TopoDS_Shape,list[TopoDS_Shape]]:
     logging.info("Load file:" + path)
     suffix = path.split('.')[-1].lower()
 
@@ -71,8 +71,9 @@ def _generate_brep(shape: dict, name:str, path:str = '', cache_dir = "tmp"):
 
     attributes = {}
 
+    # TODO: attributes
     meta['data'] = {
-            'brep_file': f'.{path}-{name}.brep',
+            'brep_file': f'{path}-{name}.brep',
             'attributes': attributes
         }
     meta['children'] = children_meta
@@ -110,5 +111,40 @@ def save(path:str, shapes:shape_data.main_datas):
     with ZipFile(path, 'w') as f:
         compress_folder(f, cache)
 
-def open_file(path:str) -> shape_data.shape_item:
-    pass
+def _load_brep(data_meta: dict, cache_dir:str) -> dict:
+    shape = {}
+
+    mod_file = TopoDS_Shape()
+    builder = BRep_Builder()
+    logging.debug(f"Loading:{cache_dir}/{data_meta['data']['brep_file']}")
+    BRepTools.Read_(mod_file, f"{cache_dir}/{data_meta['data']['brep_file']}", builder)
+
+    # TODO: attributes
+
+    shape['data'] = mod_file
+
+    children = {}
+    for child_name, child_meta in data_meta['children'].items():
+        children[child_name] = _load_brep(child_meta, cache_dir)
+
+    shape['children'] = children
+    return shape
+
+def load_file(path:str) -> dict[str, dict]:
+    cache = tempfile.mktemp()
+    os.mkdir(cache)
+    logging.debug(f"Unzip cache dir: {cache}")
+    with ZipFile(path, 'r') as f:
+        for name in f.namelist():
+            f.extract(name, cache)
+
+    with open(f'{cache}/meta.json', 'r') as f:
+        meta:dict[str, dict] = json.loads(f.read())
+    logging.debug(f"Meta data: {meta}")
+    
+    shape_datas = {}
+
+    for name, shape in meta.items():
+        shape_datas[name] = _load_brep(shape, cache)
+
+    return shape_datas

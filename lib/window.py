@@ -97,7 +97,7 @@ class MainWindow(QMainWindow):
         self.main_page_window = QTabWidget()  # 主要的文件页面
         self.main_layout.addWidget(self.main_page_window)
         
-        self.new_page() # 很奇怪，如果我不在此处加载new_page然后创建RibbonBar会导致lib加载失败，详见github.com/tpaviot/pythonocc-core/issues/1214
+        self.new_page() # github.com/tpaviot/pythonocc-core/issues/1214
 
         self.RibbonBar = my_RibbonBar(self, self.title, self.share_var)  # Ribbon 工具栏
         self.setMenuBar(self.RibbonBar)
@@ -148,7 +148,7 @@ class MainWindow(QMainWindow):
             self.RibbonBar.change_fullscreen_button()
         super().changeEvent(event)
 
-    def new_page(self, file=None):
+    def new_page(self):
         logging.info("New page") # 新建页面
 
         page = occ_page()

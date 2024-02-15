@@ -153,7 +153,7 @@ class occ_page(potaoViewer):
         self.shape_datas = main_datas(self)
 
     def import_file(self, path: str):
-        mod_file = file_io.load(path)
+        mod_file = file_io.import_shap(path)
         if isinstance(mod_file, list):
             n=0
             for i in mod_file:
