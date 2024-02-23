@@ -23,6 +23,9 @@ import share_var
 
 import plugin
 from window import MainWindow
+from lib.multithread_manager import thread_manager
+
+import cProfile
 
 SAFE_MOD = False
 
@@ -54,7 +57,7 @@ if os.path.exists(os.path.join(lang_localedir, lang)): # 检查语言是否存�
     translation.install()
 else:
     gettext.install(None)
-    logging.info(f"Can't find:{lang}.Use english")
+    logging.info(f"Can't find:{lang}. Use english")
 
 
 class Main():
@@ -62,21 +65,37 @@ class Main():
         # 创建 MainWindow
         self.app = QApplication(sys.argv)
         share_var.main_class = self
+        self.threads = thread_manager()
+        share_var.threads = self.threads
         self.main_window = MainWindow()
         share_var.main_window = self.main_window
 
-        print(share_var)
         # 加载插件
         if not SAFE_MOD:
             self.plugins = plugin.plugins()
             self.plugins.load_core()
             # self.plugins.load(self) 
 
-        self.main_window.show()
-
-
-
 
 if __name__ == '__main__':
+
+    # Profile = cProfile.Profile()
+    # Profile.enable()
+
     win = Main()
+
+    # debug
+    # def trace(frame, event, arg):
+    #     print("%s, %s:%d" % (event, frame.f_code.co_filename, frame.f_lineno))
+    #     return trace
+
+    # sys.settrace(trace)
+
+    win.main_window.show()
     win.app.exec()
+
+    # Profile.disable()
+    # # Profile.dump_stats('profile.prof')
+    # import pstats
+    # pstats.Stats(Profile).dump_stats('profile.prof')
+

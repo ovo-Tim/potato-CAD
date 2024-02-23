@@ -3,14 +3,13 @@ from pyqtribbon.titlewidget import RibbonTitleWidget
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtWidgets import *
+import qfluentwidgets
 import os
 import sys
 import time
 import logging
 import qt_json_setting
-
 from pathlib import Path
-
 from occ_page import occ_page
 import share_var
 
@@ -96,10 +95,9 @@ class MainWindow(QMainWindow):
         self.page_list = {}
         self._activity_page = None
         self.main_page_window = QTabWidget()  # 主要的文件页面
-        self.main_page_window.currentChanged.connect(self.refresh_occ)
         self.main_layout.addWidget(self.main_page_window)
         
-        self.new_page() # 很奇怪，如果我不在此处加载new_page然后创建RibbonBar会导致lib加载失败，详见github.com/tpaviot/pythonocc-core/issues/1214
+        self.new_page() # github.com/tpaviot/pythonocc-core/issues/1214
 
         self.RibbonBar = my_RibbonBar(self, self.title, self.share_var)  # Ribbon 工具栏
         self.setMenuBar(self.RibbonBar)
@@ -150,35 +148,27 @@ class MainWindow(QMainWindow):
             self.RibbonBar.change_fullscreen_button()
         super().changeEvent(event)
 
-    def new_page(self, file=None):
+    def new_page(self):
         logging.info("New page") # 新建页面
 
         page = occ_page()
 
-        if page.name == None:
-            i = 0
-            while 'new file '+str(i) in self.page_list.keys():
-                i += 1
-            name = 'new file '+str(i)
-            page.name = name
+        i = 0
+        while 'new file '+str(i) in self.page_list.keys():
+            i += 1
+        name = 'new file '+str(i)
+        page.name = name
 
         self.page_list[page.name] = page
         self.main_page_window.addTab(
             self.page_list[page.name], QIcon(share_var.root_path + '/icon.svg'), page.name)
         
-        page.InitDriver()
+        # page.InitDriver()
 
-        if file != None:
-            page.load_file(file)
-            page.path = file
-            page.name = os.path.basename(page.path)
+        # if file != None:
+        #     page.load_file(file)
 
         return page
-
-    def refresh_occ(self):
-        logging.debug("refresh viewer")
-        # self.activity_page().display.SetSize(self.activity_page().width(), self.activity_page().height())
-        self.activity_page().InitDriver()
         
     def activity_page(self) -> occ_page:
         self._activity_page = self.page_list[self.main_page_window.tabText(self.main_page_window.currentIndex())]

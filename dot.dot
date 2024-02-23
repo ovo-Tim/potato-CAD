@@ -1,0 +1,11 @@
+digraph {
+	graph [fontname=Arial, nodesep=0.125, ranksep=0.25];
+	node [fontcolor=white, fontname=Arial, height=0, shape=box, style=filled, width=0];
+	edge [fontname=Arial];
+	311 [color="#f92701", fontcolor="#ffffff", fontsize="10.00", label="~:0:<built-in method getOpenFileNames>\n96.16%\n(96.15%)\n1×", tooltip="~"];
+	313 [color="#0d1876", fontcolor="#ffffff", fontsize="10.00", label="qtDisplay:64:__init__\n2.72%\n(0.00%)\n2×", tooltip="/home/tim/mambaforge/envs/potatoCAD2/lib/python3.12/site-packages/OCCT/Display/qtDisplay.py"];
+	314 [color="#0d1876", fontcolor="#ffffff", fontsize="10.00", label="qtDisplay:31:__init__\n2.71%\n(0.00%)\n2×", tooltip="/home/tim/mambaforge/envs/potatoCAD2/lib/python3.12/site-packages/OCCT/Display/qtDisplay.py"];
+	315 [color="#0d1876", fontcolor="#ffffff", fontsize="10.00", label="OCCViewer:98:__init__\n2.71%\n(2.71%)\n2×", tooltip="/home/tim/mambaforge/envs/potatoCAD2/lib/python3.12/site-packages/OCCT/Display/OCCViewer.py"];
+	415 [color="#f92701", fontcolor="#ffffff", fontsize="10.00", label="_utils:154:_from_kwarg_name_to_kwarg_name_\n96.16%\n(0.00%)\n1×", tooltip="/home/tim/mambaforge/envs/potatoCAD2/lib/python3.12/site-packages/qtpy/_utils.py"];
+	415 -> 311 [arrowsize="0.98", color="#f92701", fontcolor="#f92701", fontsize="10.00", label="96.16%\n1×", labeldistance="3.85", penwidth="3.85"];
+}
